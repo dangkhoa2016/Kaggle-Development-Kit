@@ -1,0 +1,69 @@
+# Runtime, databases and generated service state
+.system/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Kaggle notebook local state (do not publish)
+.kaggle-ssh/
+.virtual_documents/
+setup.local.sh
+*.local.sh
+
+# Local databases and persistence files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-shm
+*.sqlite3-wal
+*.rdb
+*.aof
+
+# Logs, PIDs and sockets
+*.log
+*.pid
+*.sock
+
+# Build/download workspace
+build/
+dist/
+.cache/
+.tmp/
+tmp/
+sqlite-src-*/
+sqlite-src-*.zip
+*.zip
+temp/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+
+# Language/tool caches
+__pycache__/
+*.py[cod]
+node_modules/
+vendor/bundle/
+.bundle/
+
+# Local notebook/user configuration
+.kaggle-dev.env
+
+# Local release output
+release/
+*.zip.sha256
