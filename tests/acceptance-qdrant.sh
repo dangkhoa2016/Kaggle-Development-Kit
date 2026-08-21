@@ -16,6 +16,10 @@ HELPER="$SYSTEM/qdrant-service.sh"
 INSTANCE="$SYSTEM/qdrant/instances/$VERSION"
 
 mkdir -p "$RUN_ROOT" "$EVIDENCE"
+# mktemp -d creates mode 0700; QNP starts Qdrant as qdrantuser, which must
+# be able to traverse this disposable acceptance root to reach its own
+# service-owned config/storage/runtime paths. Keep listing/write access closed.
+chmod 0711 "$RUN_ROOT"
 cleanup() {
   if [ -x "$HELPER" ]; then
     KAGGLE_SYSTEM_DIR="$SYSTEM" KAGGLE_DEV_CONFIG_FILE="$CFG" \
