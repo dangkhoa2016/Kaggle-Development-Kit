@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+set -euo pipefail
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SYSTEM_DIR="${KAGGLE_SYSTEM_DIR:-$PROJECT_ROOT/.system}"
+# shellcheck source=../install/lib/common.sh
+source "$PROJECT_ROOT/install/lib/common.sh"
+# shellcheck source=../install/lib/load-config.sh
+source "$PROJECT_ROOT/install/lib/load-config.sh"
+load_project_config "$PROJECT_ROOT"
+
+usage() {
+  cat <<'HELP'
+Kaggle Development Environment CLI
+
+Usage:
+  kdev versions
+  kdev install [all|postgres|redis|elastic|qdrant|tools]
+  kdev doctor
+  kdev postgres [VERSION] <start|stop|status|psql|enable-pgvector> [args...]
+  kdev redis    [VERSION] <start|stop|status|cli> [args...]
+  kdev elastic  [VERSION] <start|stop|restart|status> [elasticsearch|kibana|logstash|all]
+  kdev qdrant   [VERSION] <start|stop|restart|status|health|url|logs|version> [args...]
+  kdev ssh      [start|status|stop]
+
+Examples:
+  bin/kdev versions
+  bin/kdev postgres 18 psql
+  bin/kdev redis 8.10.0 cli PING
+  bin/kdev elastic 9.5.0 start elasticsearch
+  bin/kdev qdrant 1.18.3 health
+HELP
+}
+
+show_versions() {
+  echo "Configured versions"
+  printf '  PostgreSQL : %s (default %s; auto-start: %s)\n' "${POSTGRES_VERSIONS:-18}" "${POSTGRES_DEFAULT_VERSION:-18}" "${POSTGRES_AUTO_START_VERSIONS:-}"
+  printf '  Redis      : %s (default %s; auto-start: %s)\n' "${REDIS_VERSIONS:-8.10.0}" "${REDIS_DEFAULT_VERSION:-8.10.0}" "${REDIS_AUTO_START_VERSIONS:-}"
+  printf '  Elastic    : %s (default %s; auto-start: %s)\n' "${ELASTIC_VERSIONS:-9.5.0}" "${ELASTIC_DEFAULT_VERSION:-9.5.0}" "${ELASTIC_AUTO_START_VERSIONS:-none}"
+  printf '  Components : %s\n' "${ELASTIC_COMPONENTS:-elasticsearch kibana logstash}"
+  printf '  Qdrant     : %s (default %s; auto-start: %s)\n' "${QDRANT_VERSIONS:-1.18.3}" "${QDRANT_DEFAULT_VERSION:-1.18.3}" "${QDRANT_AUTO_START_VERSIONS:-none}"
+  printf '  QNP        : %s (commit %s)\n' "${QNP_RELEASE:-1.0.0}" "${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4}"
+  echo
+  echo "Installed runtimes"
+  local found=0 path version components
+  shopt -s nullglob
+  for path in "$SYSTEM_DIR"/pg/runtime/usr/lib/postgresql/*/bin/postgres; do
+    version="$(basename "$(dirname "$(dirname "$path")")")"; printf '  PostgreSQL %-10s %s\n' "$version" "$path"; found=1
+  done
+  for path in "$SYSTEM_DIR"/redis/versions/*/bin/redis-server; do
+    version="$(basename "$(dirname "$(dirname "$path")")")"; printf '  Redis      %-10s %s\n' "$version" "$path"; found=1
+  done
+  for path in "$SYSTEM_DIR"/elastic/versions/*; do
+    [ -d "$path" ] || continue; version="$(basename "$path")"
+    components="$(cat "$path/components" 2>/dev/null || true)"
+    printf '  Elastic    %-10s components=%s\n' "$version" "${components:-unknown}"; found=1
+  done
+  for path in "$SYSTEM_DIR"/qdrant/instances/*; do
+    [ -d "$path" ] || continue; version="$(basename "$path")"
+    if [ -x "$path/qdrant-$version/qdrant" ]; then
+      printf '  Qdrant     %-10s %s\n' "$version" "$path/qdrant-$version/qdrant"; found=1
+    fi
+  done
+  shopt -u nullglob
+  [ "$found" -eq 1 ] || echo "  (none yet)"
+}
+
+resolve_version() {
+  local candidate="${1:-}" default="$2"
+  case "$candidate" in start|stop|restart|status|psql|enable-pgvector|cli|'') printf '%s\n' "$default" ;; *) printf '%s\n' "$candidate" ;; esac
+}
+
+command="${1:-help}"; [ "$#" -eq 0 ] || shift
+case "$command" in
+  help|-h|--help) usage ;;
+  versions) show_versions ;;
+  doctor) exec bash "$PROJECT_ROOT/scripts/doctor.sh" ;;
+  install)
+    target="${1:-all}"
+    case "$target" in
+      all) exec bash "$PROJECT_ROOT/install/install-all.sh" install ;;
+      postgres) exec bash "$PROJECT_ROOT/install/install-postgres.sh" ;;
+      redis) exec bash "$PROJECT_ROOT/install/install-redis.sh" ;;
+      elastic) exec bash "$PROJECT_ROOT/install/install-elastic.sh" ;;
+      qdrant) exec bash "$PROJECT_ROOT/install/install-qdrant.sh" ;;
+      tools|mise) exec bash "$PROJECT_ROOT/install/install-other.sh" ;;
+      *) echo "Unknown install target: $target" >&2; exit 2 ;;
+    esac ;;
+  postgres)
+    default="${POSTGRES_DEFAULT_VERSION:-18}"; version="$(resolve_version "${1:-}" "$default")"
+    if [ "${1:-}" = "$version" ] && [ "${1:-}" != "$default" -o "${1:-}" = "$default" ]; then shift || true; fi
+    action="${1:-psql}"; [ "$#" -eq 0 ] || shift
+    helper="$SYSTEM_DIR/pg${version}-service.sh"
+    [ -x "$helper" ] || { echo "PostgreSQL $version is not installed. Run: bin/kdev install postgres" >&2; exit 1; }
+    exec "$helper" "$action" "$@" ;;
+  redis)
+    default="${REDIS_DEFAULT_VERSION:-8.10.0}"; candidate="${1:-}"; version="$(resolve_version "$candidate" "$default")"
+    case "$candidate" in start|stop|status|cli|'') ;; *) shift ;; esac
+    action="${1:-cli}"; [ "$#" -eq 0 ] || shift
+    helper="$SYSTEM_DIR/redis-service.sh"
+    [ -x "$helper" ] || { echo "Redis is not installed. Run: bin/kdev install redis" >&2; exit 1; }
+    exec "$helper" "$version" "$action" "$@" ;;
+  elastic)
+    default="${ELASTIC_DEFAULT_VERSION:-9.5.0}"; candidate="${1:-}"; version="$(resolve_version "$candidate" "$default")"
+    case "$candidate" in start|stop|restart|status|'') ;; *) shift ;; esac
+    action="${1:-status}"; [ "$#" -eq 0 ] || shift
+    target="${1:-all}"
+    helper="$SYSTEM_DIR/elastic-ctl.sh"
+    [ -x "$helper" ] || { echo "Elastic Stack is not installed. Run: bin/kdev install elastic" >&2; exit 1; }
+    exec "$helper" "$version" "$action" "$target" ;;
+  qdrant)
+    default="${QDRANT_DEFAULT_VERSION:-1.18.3}"; candidate="${1:-}"
+    case "$candidate" in start|stop|restart|status|health|url|logs|version|'') version="$default" ;; *) version="$candidate"; shift ;; esac
+    action="${1:-status}"; [ "$#" -eq 0 ] || shift
+    case "$action" in start|stop|restart|status|health|url|logs|version) ;; *) echo "Unknown Qdrant action: $action" >&2; usage >&2; exit 2 ;; esac
+    helper="$SYSTEM_DIR/qdrant-service.sh"
+    [ -x "$helper" ] || { echo "Qdrant is not installed. Run: bin/kdev install qdrant" >&2; exit 1; }
+    exec "$helper" "$version" "$action" "$@" ;;
+  ssh)
+    action="${1:-start}"
+    case "$action" in start) exec bash "$PROJECT_ROOT/setup.sh" ;; status) exec bash "$PROJECT_ROOT/setup.sh" --status ;; stop) exec bash "$PROJECT_ROOT/setup.sh" --stop ;; *) usage; exit 2 ;; esac ;;
+  *) echo "Unknown command: $command" >&2; usage >&2; exit 2 ;;
+esac
