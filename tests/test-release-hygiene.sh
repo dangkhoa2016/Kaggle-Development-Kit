@@ -35,7 +35,13 @@ printf 'local\n' > "$COPY/.kaggle-dev.env"
 
 bash "$COPY/scripts/build-release-zips.sh" "$TMP/out" >/dev/null
 ZIP="$TMP/out/kaggle-development-kit-v1.0.0.zip"
+SIDECAR="$ZIP.sha256"
 [ -f "$ZIP" ]
+[ -f "$SIDECAR" ]
+(
+  cd "$TMP/out"
+  sha256sum -c "$(basename "$SIDECAR")" >/dev/null
+)
 unzip -Z1 "$ZIP" > "$TMP/names"
 
 grep -q 'README.md$' "$TMP/names"
@@ -51,4 +57,4 @@ for forbidden in \
   fi
 done
 
-echo 'PASS: public release builder excludes runtime/private artifacts'
+echo 'PASS: public release builder excludes runtime/private artifacts and writes a valid checksum sidecar'
