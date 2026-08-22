@@ -175,14 +175,15 @@ sha256sum -c MANIFEST.sha256
 (cd install && sha256sum -c MANIFEST.sha256)
 ```
 
-Build the v1.0.0 source-only public release ZIP:
+Build and verify the v1.0.0 source-only public release artifacts:
 
 ```bash
-bash scripts/build-release-zips.sh
-sha256sum kaggle-development-kit-v1.0.0.zip > kaggle-development-kit-v1.0.0.zip.sha256
+OUT_DIR="$PWD/release"
+bash scripts/build-release-zips.sh "$OUT_DIR"
+(cd "$OUT_DIR" && sha256sum -c kaggle-development-kit-v1.0.0.zip.sha256)
 ```
 
-The release script deliberately excludes `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, local environment files, logs, PIDs, sockets, private-key patterns, runtime secrets, and existing ZIP files.
+The builder writes both `kaggle-development-kit-v1.0.0.zip` and its `.zip.sha256` sidecar. It deliberately excludes `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, local environment files, logs, PIDs, sockets, private-key patterns, runtime secrets, and existing ZIP files.
 
 ## Security boundary
 
