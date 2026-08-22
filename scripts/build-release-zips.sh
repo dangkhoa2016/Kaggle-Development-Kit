@@ -4,7 +4,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PARENT="$(dirname "$ROOT")"
 NAME="$(basename "$ROOT")"
 OUT_DIR="${1:-$PARENT}"
-PUBLIC_ZIP="$OUT_DIR/kaggle-dev-environment-github-public.zip"
+RELEASE_VERSION="${KDEV_RELEASE_VERSION:-1.0.0}"
+PUBLIC_ZIP="$OUT_DIR/kaggle-development-kit-v${RELEASE_VERSION}.zip"
 
 command -v zip >/dev/null 2>&1 || { echo 'zip command is required.' >&2; exit 1; }
 mkdir -p "$OUT_DIR"
