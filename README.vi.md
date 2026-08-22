@@ -1,10 +1,14 @@
-# Môi trường phát triển trên Kaggle
+# Kaggle Development Kit
 
 > 🌐 Language / Ngôn ngữ: [English](README.md) | **Tiếng Việt**
 
 Dự án bootstrap theo hướng **GitHub-first** để biến một phiên Kaggle Notebook thành môi trường Linux phục vụ development. Dự án có thể cài và quản lý **SQLite, nhiều phiên bản PostgreSQL + pgvector, nhiều phiên bản Redis chính xác, nhiều phiên bản Elastic Stack, Qdrant, mise/Node/Ruby/npm/Yarn, OpenSSH, ngrok và tmux** mà không cần Docker.
 
 Điểm vào được khuyến nghị là [`notebooks/kaggle-dev-bootstrap.ipynb`](notebooks/kaggle-dev-bootstrap.ipynb): Cell 1 tự fetch/update mã nguồn từ GitHub; Cell 2 là nơi người dùng chỉnh version/port/cấu hình.
+
+## Baseline validation v1.0.0
+
+Adapter Qdrant đã hoàn tất real acceptance gate trên Kaggle với Qdrant native `1.18.3`, Qdrant Native Portable (QNP) `1.0.0` được pin tại commit `464cb5dbc1117a8a8a6472d76a10c5e329021156`. Run đã pass fresh install, `/readyz`, vector upsert/read/search, persistence sau restart, idempotent second install, doctor, bind chỉ trên loopback, không public tunnel và kiểm tra summary không lộ secret. Branch finalization vẫn phải build, giải nén và verify lại source ZIP cuối cùng trước khi tạo tag `v1.0.0`.
 
 ## Thiết kế dành cho GitHub public
 
@@ -63,7 +67,7 @@ QNP_SOURCE_COMMIT="464cb5dbc1117a8a8a6472d76a10c5e329021156"
 
 **Cài đặt version** và **khởi động process** là hai việc khác nhau. Có thể cài nhiều version nhưng chỉ chạy một version. Elastic mặc định **không auto-start** vì chạy nhiều full stack cùng lúc tốn RAM/CPU trên Kaggle.
 
-Qdrant được tích hợp bằng một adapter mỏng trên **Qdrant Native Portable (QNP) 1.0.0 được pin bằng full Git commit**. QNP tiếp tục là source authority cho setup/lifecycle/strict-mode/storage của Qdrant; repository này bổ sung cấu hình Kaggle, cô lập theo version, tự phân bổ port, `kdev` và release hygiene. Qdrant **1.18.3** là target duy nhất của release candidate được bao phủ bởi real acceptance gate. Có thể cấu hình exact version `X.Y.Z` khác nhưng phải test riêng. Final Kaggle validation vẫn bị chặn bởi `tests/acceptance-qdrant.sh` cho tới khi test đó pass.
+Qdrant được tích hợp bằng một adapter mỏng trên **Qdrant Native Portable (QNP) 1.0.0 được pin bằng full Git commit**. QNP tiếp tục là source authority cho setup/lifecycle/strict-mode/storage của Qdrant; repository này bổ sung cấu hình Kaggle, cô lập theo version, tự phân bổ port, `kdev` và release hygiene. Qdrant **1.18.3** là target đã được validation cho baseline v1.0.0. Exact version `X.Y.Z` khác vẫn có thể cấu hình nhưng phải được validation riêng trước khi xem là release baseline được hỗ trợ.
 
 ## Layout multi-version
 
@@ -169,9 +173,10 @@ sha256sum -c MANIFEST.sha256
 (cd install && sha256sum -c MANIFEST.sha256)
 
 bash scripts/build-release-zips.sh
+sha256sum kaggle-development-kit-v1.0.0.zip > kaggle-development-kit-v1.0.0.zip.sha256
 ```
 
-Release script chỉ tạo source ZIP public và cố ý loại `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env` và các ZIP cũ.
+Release script chỉ tạo source ZIP public và cố ý loại `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, local environment file, log, PID, socket, private-key pattern, runtime secret và các ZIP cũ.
 
 ## Ranh giới security/public
 
