@@ -14,7 +14,14 @@ OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 PUBLIC_ZIP="$OUT_DIR/kaggle-development-kit-v${RELEASE_VERSION}.zip"
 PUBLIC_SHA256="$PUBLIC_ZIP.sha256"
 
-bash "$ROOT/scripts/refresh-manifest.sh"
+OUT_REL=''
+if [ "$OUT_DIR" != "$ROOT" ]; then
+  case "$OUT_DIR/" in
+    "$ROOT/"*) OUT_REL="${OUT_DIR#"$ROOT"/}" ;;
+  esac
+fi
+
+KDEV_MANIFEST_EXCLUDE_DIR="$OUT_REL" bash "$ROOT/scripts/refresh-manifest.sh"
 rm -f "$PUBLIC_ZIP" "$PUBLIC_SHA256"
 
 STAGE_DIR="$(mktemp -d)"
@@ -47,14 +54,9 @@ TAR_EXCLUDES=(
 # If the requested output directory lives inside the checkout (for example
 # "$PWD/release"), exclude it from staging so old artifacts/sidecars cannot be
 # recursively embedded in the new public ZIP.
-case "$OUT_DIR/" in
-  "$ROOT/"*)
-    OUT_REL="${OUT_DIR#"$ROOT"/}"
-    if [ -n "$OUT_REL" ]; then
-      TAR_EXCLUDES+=(--exclude="./$OUT_REL" --exclude="./$OUT_REL/*")
-    fi
-    ;;
-esac
+if [ -n "$OUT_REL" ]; then
+  TAR_EXCLUDES+=(--exclude="./$OUT_REL" --exclude="./$OUT_REL/*")
+fi
 
 tar -C "$ROOT" "${TAR_EXCLUDES[@]}" -cf - . 2>"$SOURCE_COPY_ERR" \
   | tar -C "$STAGE_ROOT" -xf -
