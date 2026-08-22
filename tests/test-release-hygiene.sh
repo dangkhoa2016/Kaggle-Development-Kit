@@ -34,7 +34,7 @@ printf 'secret\n' > "$COPY/.kaggle-ssh/authorized_keys"
 printf 'local\n' > "$COPY/.kaggle-dev.env"
 
 bash "$COPY/scripts/build-release-zips.sh" "$TMP/out" >/dev/null
-ZIP="$TMP/out/kaggle-dev-environment-github-public.zip"
+ZIP="$TMP/out/kaggle-development-kit-v1.0.0.zip"
 [ -f "$ZIP" ]
 unzip -Z1 "$ZIP" > "$TMP/names"
 
