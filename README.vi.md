@@ -171,12 +171,17 @@ Nếu bắt đầu từ session sạch, chỉ cần chạy lại notebook: Cell 
 bash scripts/refresh-manifest.sh
 sha256sum -c MANIFEST.sha256
 (cd install && sha256sum -c MANIFEST.sha256)
-
-bash scripts/build-release-zips.sh
-sha256sum kaggle-development-kit-v1.0.0.zip > kaggle-development-kit-v1.0.0.zip.sha256
 ```
 
-Release script chỉ tạo source ZIP public và cố ý loại `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, local environment file, log, PID, socket, private-key pattern, runtime secret và các ZIP cũ.
+Build và verify public release artifact v1.0.0:
+
+```bash
+OUT_DIR="$PWD/release"
+bash scripts/build-release-zips.sh "$OUT_DIR"
+(cd "$OUT_DIR" && sha256sum -c kaggle-development-kit-v1.0.0.zip.sha256)
+```
+
+Builder tự tạo cả `kaggle-development-kit-v1.0.0.zip` và sidecar `.zip.sha256`. Release script cố ý loại `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, local environment file, log, PID, socket, private-key pattern, runtime secret và các ZIP cũ.
 
 ## Ranh giới security/public
 
