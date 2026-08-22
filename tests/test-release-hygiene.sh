@@ -36,6 +36,7 @@ printf 'local\n' > "$COPY/.kaggle-dev.env"
 bash "$COPY/scripts/build-release-zips.sh" "$TMP/out" >/dev/null
 ZIP="$TMP/out/kaggle-development-kit-v1.0.0.zip"
 SIDECAR="$ZIP.sha256"
+EXPECTED_ROOT='Kaggle-Development-Kit-v1.0.0/'
 [ -f "$ZIP" ]
 [ -f "$SIDECAR" ]
 (
@@ -44,8 +45,18 @@ SIDECAR="$ZIP.sha256"
 )
 unzip -Z1 "$ZIP" > "$TMP/names"
 
-grep -q 'README.md$' "$TMP/names"
-grep -q '\.kaggle-dev.env.example$' "$TMP/names"
+grep -Fxq "$EXPECTED_ROOT" "$TMP/names"
+while IFS= read -r entry; do
+  case "$entry" in
+    "$EXPECTED_ROOT"*) ;;
+    *)
+      echo "public artifact entry escaped stable release root: $entry" >&2
+      exit 1
+      ;;
+  esac
+done < "$TMP/names"
+grep -Fxq "${EXPECTED_ROOT}README.md" "$TMP/names"
+grep -Fxq "${EXPECTED_ROOT}.kaggle-dev.env.example" "$TMP/names"
 for forbidden in \
   '/.system/' '/.kaggle-ssh/' '/.kaggle-dev.env$' \
   '\.log$' '\.pid$' '\.sock$' '\.pem$' '\.key$' '\.p12$' '\.pfx$' \
@@ -57,4 +68,4 @@ for forbidden in \
   fi
 done
 
-echo 'PASS: public release builder excludes runtime/private artifacts and writes a valid checksum sidecar'
+echo 'PASS: public release builder uses a stable versioned root, excludes runtime/private artifacts, and writes a valid checksum sidecar'
