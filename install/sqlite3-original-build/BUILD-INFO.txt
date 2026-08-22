@@ -1,0 +1,22 @@
+Bundled SQLite tools - original non-stripped build
+Added to this package: 2026-08-06
+Architecture: x86_64
+SQLite source version: 3.53.4
+SQLite source archive: sqlite-src-3530400.zip
+SQLite source URL: https://www.sqlite.org/2026/sqlite-src-3530400.zip
+SQLite source SHA3-256: b834d474b9b393d85a9e3ee4cc11f1329e007e9376a424ee740796f5c4bda3a8
+SQLite CLI version: 3.53.4 2026-07-24 19:02:57 bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc (64-bit)
+Compiler: GCC 11.4.0 on Ubuntu 22.04
+Recorded compile flags include: -g -O2 -fPIC -fstack-protector-strong -fstack-clash-protection -fcf-protection
+Original build directory embedded in DWARF: /kaggle/working/sqlite-src-3530400
+
+Notes:
+- Original dynamically linked Linux x86-64 binaries supplied for this project.
+- Retain debug information and have not been stripped.
+- sqlite3 links to GNU Readline 8; see ../../THIRD_PARTY_NOTICES.md.
+- sqlite3_analyzer links to Tcl 8.6.
+- Use for native debugging, profiling, symbol inspection, or core-dump analysis.
+- The default installer copies the smaller stripped build from ../sqlite3/.
+- SHA-256 checksums are stored in SHA256SUMS.
+- Host shared libraries/glibc must remain ABI-compatible.
+- Rebuild helper: ../../scripts/rebuild-sqlite-tools.sh
