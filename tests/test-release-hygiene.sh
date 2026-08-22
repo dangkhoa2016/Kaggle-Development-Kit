@@ -33,14 +33,20 @@ printf 'runtime\n' > "$COPY/.system/qdrant/instances/1.18.3/run/runtime.txt"
 printf 'secret\n' > "$COPY/.kaggle-ssh/authorized_keys"
 printf 'local\n' > "$COPY/.kaggle-dev.env"
 
-bash "$COPY/scripts/build-release-zips.sh" "$TMP/out" >/dev/null
-ZIP="$TMP/out/kaggle-development-kit-v1.0.0.zip"
+# Exercise the documented "$PWD/release" layout and seed an old sidecar so the
+# builder must keep prior output state out of both the manifest and the ZIP.
+OUT="$COPY/release"
+mkdir -p "$OUT"
+printf 'stale\n' > "$OUT/old-build.zip.sha256"
+
+bash "$COPY/scripts/build-release-zips.sh" "$OUT" >/dev/null
+ZIP="$OUT/kaggle-development-kit-v1.0.0.zip"
 SIDECAR="$ZIP.sha256"
 EXPECTED_ROOT='Kaggle-Development-Kit-v1.0.0/'
 [ -f "$ZIP" ]
 [ -f "$SIDECAR" ]
 (
-  cd "$TMP/out"
+  cd "$OUT"
   sha256sum -c "$(basename "$SIDECAR")" >/dev/null
 )
 unzip -Z1 "$ZIP" > "$TMP/names"
@@ -57,6 +63,10 @@ while IFS= read -r entry; do
 done < "$TMP/names"
 grep -Fxq "${EXPECTED_ROOT}README.md" "$TMP/names"
 grep -Fxq "${EXPECTED_ROOT}.kaggle-dev.env.example" "$TMP/names"
+if grep -Fq "${EXPECTED_ROOT}release/" "$TMP/names"; then
+  echo 'public artifact recursively embedded its output directory' >&2
+  exit 1
+fi
 for forbidden in \
   '/.system/' '/.kaggle-ssh/' '/.kaggle-dev.env$' \
   '\.log$' '\.pid$' '\.sock$' '\.pem$' '\.key$' '\.p12$' '\.pfx$' \
@@ -68,4 +78,14 @@ for forbidden in \
   fi
 done
 
-echo 'PASS: public release builder uses a stable versioned root, excludes runtime/private artifacts, and writes a valid checksum sidecar'
+EXTRACT="$TMP/extracted"
+mkdir -p "$EXTRACT"
+unzip -q "$ZIP" -d "$EXTRACT"
+(
+  cd "$EXTRACT/${EXPECTED_ROOT%/}"
+  sha256sum -c MANIFEST.sha256 >/dev/null
+  cd install
+  sha256sum -c MANIFEST.sha256 >/dev/null
+)
+
+echo 'PASS: public release builder uses a stable versioned root, excludes output/runtime/private artifacts, preserves manifest integrity, and writes a valid checksum sidecar'
