@@ -4,50 +4,25 @@
 
 Validation date: 2026-08-22
 
-## Release-candidate status
+## v1.0.0 release-finalization status
 
-This source tree is a **release candidate**, not a final tagged release. The Qdrant integration has passed deterministic configuration, pinning, CLI/doctor, local-process lifecycle, persistence, syntax, notebook, and release-hygiene tests in the build environment. The final release gate is a fresh native Qdrant 1.18.3 run on a Kaggle Notebook with outbound Internet access.
+The real Kaggle Qdrant acceptance gate is complete. The remaining release gate is packaging verification: build the final public source ZIP from the release-finalization branch, extract it into a clean directory, and re-run manifest, syntax, deterministic/integration, notebook, SQLite checksum, and release-hygiene checks before creating the `v1.0.0` tag.
 
-The current build sandbox cannot resolve `github.com`, so `tests/acceptance-qdrant.sh` exits with status `75` and an explicit `BLOCKED` result before downloading anything. This is an environment limitation, not a passing Qdrant acceptance result. Do not mark the Kaggle Qdrant adapter final-release validated until that exact test passes in a fresh Kaggle session.
+## Real Kaggle Qdrant acceptance
 
-## Qdrant integration validated in this build
-
-- Notebook Cell 2 accepts exact multi-version Qdrant configuration, a default version, REST/gRPC ports, auto-start policy, resource profile, QNP release, and a full 40-character QNP source commit.
-- The default target is Qdrant `1.18.3`, REST `6333`, gRPC `6334`, with gRPC disabled and Qdrant auto-start enabled.
-- Automatic port allocation was exercised with Qdrant `1.18.2` + `1.18.3`; generated REST/gRPC ports did not collide with PostgreSQL, Redis, or Elastic ports.
-- `install/install-qdrant.sh` pins QNP by exact release + full Git commit, checks QNP `VERSION`, runs QNP source-integrity verification when available, activates source atomically, and reuses a valid immutable cache on later installs.
-- Each Qdrant version receives an isolated `.system/qdrant/instances/<version>/` tree and independent REST/gRPC metadata.
-- The adapter forces native, single-node, `127.0.0.1` binding, `PUBLIC_MODE=none`, and `START_TUNNEL=0`.
-- `bin/kdev qdrant [VERSION] start|stop|restart|status|health|url|logs|version` routing is covered by tests.
-- `scripts/doctor.sh` checks the configured QNP pin, installed Qdrant binary, loopback configuration, endpoint metadata, and running/ready state without printing generated API keys.
-- A local integration fixture launches a real HTTP process through the generated Qdrant service helper, writes a persistence sentinel, restarts the service, re-runs the installer, and confirms that the sentinel survives both operations.
-- QNP pin/release mismatch, invalid exact versions, duplicate ports, and invalid configuration fail closed.
-
-## Qdrant test commands passed here
+Validated target:
 
 ```text
-tests/test-load-config.sh              PASS
-tests/test-qdrant-config.sh            PASS
-tests/test-qdrant-installer.sh         PASS
-tests/test-qdrant-cli.sh               PASS
-tests/integration-qdrant-adapter.sh    PASS
+QNP release: 1.0.0
+QNP commit: 464cb5dbc1117a8a8a6472d76a10c5e329021156
+Qdrant: 1.18.3
+REST acceptance endpoint: 127.0.0.1:16333
+bind scope: loopback-only
+gRPC: disabled
+public mode: none
 ```
 
-`tests/integration-qdrant-adapter.sh` intentionally uses a local QNP-compatible fixture so it can validate the new adapter, process lifecycle, loopback endpoint, idempotent re-install, and persistence without claiming that the fixture is Qdrant itself.
-
-## Existing real QNP/Qdrant evidence
-
-The Qdrant Native Portable project used as the integration authority has previously run real Qdrant `1.18.3` successfully in external validation, including authenticated collection/vector operations and persistence/recreation tests. That prior evidence supports the selected QNP/Qdrant baseline, but it does **not** replace the new adapter's fresh Kaggle acceptance gate.
-
-## Final Kaggle release gate
-
-Run from the repository root in a fresh Kaggle Notebook with Internet enabled:
-
-```bash
-bash tests/acceptance-qdrant.sh
-```
-
-A successful run must end with:
+The real native Kaggle run completed with:
 
 ```text
 fresh_install=PASS
@@ -56,50 +31,79 @@ vector_upsert_read_search=PASS
 restart_persistence=PASS
 idempotent_second_install=PASS
 doctor=PASS
+secrets_in_summary=NO
 PASS: real Qdrant 1.18.3 native acceptance
 ```
 
-The test also verifies loopback-only binding, no QNP public tunnel artifact, and that generated API keys are not printed into the sanitized acceptance summary or doctor output.
+Independent evidence from that run confirmed that the pinned QNP source integrity was clean, Qdrant `1.18.3` was downloaded and executed natively, vector data survived process restart and a second installer run, the listener stayed on loopback, no public tunnel was created, doctor reported zero failures/warnings, and the sanitized acceptance evidence did not expose generated API keys.
 
-## Other GitHub-first multi-version checks
+## Acceptance permission regression
 
-- Public shell scripts pass `bash -n`, including generated service-controller templates.
-- The notebook is valid nbformat/JSON and keeps Cell 1 as GitHub fetch/update and Cell 2 as user configuration.
-- Cell 2 has been exercised with default and multi-version service configurations, including global port-collision detection.
-- PostgreSQL supports multiple requested majors with separate data/log/run/service helpers.
-- Redis supports multiple exact `X.Y.Z` releases with isolated runtime/instance directories.
-- Elastic supports multiple exact `X.Y.Z` releases with isolated runtime/config/data/log/run directories.
-- The public release builder excludes `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, environment-secret files, private-key patterns, logs, caches, and generated ZIPs.
-- Bundled SQLite tool sets are checked against their recorded checksums.
+The acceptance fixture keeps QNP `PROCESS_MODE=service-user`. Its disposable root is mode `0711`, allowing the service identity to traverse to service-owned runtime paths without granting directory listing or write access; the root-owned `qdrant.env` remains mode `0600`.
 
-## Clean release-candidate archive verification
-
-An RC archive was built and then validated from a fresh extraction, not from the working tree:
-
-- root `MANIFEST.sha256`: 59 entries verified;
-- installer `MANIFEST.sha256`: 26 entries verified;
-- 20 extracted shell files passed `bash -n`;
-- the extracted notebook passed `nbformat.validate`;
-- all deterministic Qdrant tests plus the local-process adapter integration test passed from the extracted archive;
-- ZIP entry scanning found no `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, log/PID/socket files, private-key file patterns, `secrets.env`, `runtime.env`, or `.qdrant-base`.
-
-This archive verification does not change the blocked status of the real native Kaggle acceptance gate.
-
-## Recommended full pre-release smoke test
-
-After the Qdrant acceptance gate passes, run:
-
-```bash
-bash scripts/doctor.sh
-bin/kdev versions
-
-bin/kdev postgres 18 start
-bin/kdev postgres 18 psql -c 'SELECT version();'
-bin/kdev redis 8.10.0 start
-bin/kdev redis 8.10.0 cli PING
-bin/kdev elastic 9.5.0 start elasticsearch
-bin/kdev qdrant 1.18.3 health
-curl -fsS http://127.0.0.1:6333/readyz
+```text
+tests/test-qdrant-acceptance-permissions.sh PASS
 ```
 
-Then stop services that are not needed and confirm that no private/runtime state is staged for Git.
+This closes the earlier failure where a `mktemp -d` root at mode `0700` made a valid generated Qdrant configuration inaccessible to `qdrantuser`.
+
+## Deterministic and integration coverage
+
+The Qdrant adapter is covered by:
+
+```text
+tests/test-load-config.sh                   PASS
+tests/test-qdrant-config.sh                 PASS
+tests/test-qdrant-installer.sh              PASS
+tests/test-qdrant-cli.sh                    PASS
+tests/integration-qdrant-adapter.sh         PASS
+tests/test-qdrant-acceptance-permissions.sh PASS
+tests/test-release-hygiene.sh               PASS
+```
+
+`tests/integration-qdrant-adapter.sh` intentionally uses a local QNP-compatible process fixture for deterministic lifecycle/idempotency/persistence coverage. The separate `tests/acceptance-qdrant.sh` run above is the evidence for real native Qdrant itself.
+
+## Release-hygiene validation
+
+The public release boundary excludes `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, local environment files, logs, PIDs, sockets, private-key patterns, `secrets.env`, `runtime.env`, `.qdrant-base`, and existing ZIPs.
+
+The release-hygiene fixture was also hardened so it does not traverse live `.system/` runtime state while preparing its isolated test tree. This prevents active PostgreSQL Unix sockets such as `.s.PGSQL.5433` from producing misleading `tar: socket ignored` warnings. The updated test passed on the live Kaggle checkout while PostgreSQL runtime state existed.
+
+## Other validated project behavior
+
+- Notebook Cell 2 supports exact multi-version Qdrant configuration, default version selection, REST/gRPC ports, auto-start policy, resource profile, QNP release, and full 40-character QNP source pinning.
+- Qdrant instances are isolated under `.system/qdrant/instances/<version>/`.
+- The adapter forces native, single-node, `127.0.0.1`, `PUBLIC_MODE=none`, and `START_TUNNEL=0`.
+- `bin/kdev qdrant [VERSION] start|stop|restart|status|health|url|logs|version` routing is covered.
+- PostgreSQL supports multiple requested majors with isolated data/log/run/service helpers and pgvector integration.
+- Redis supports multiple exact `X.Y.Z` releases with isolated runtimes/instances.
+- Elastic supports multiple exact `X.Y.Z` releases with isolated runtime/config/data/log/run trees.
+- Bundled stripped and original SQLite tool sets have recorded checksums.
+
+## Final artifact gate
+
+The default public artifact name for this release is:
+
+```text
+kaggle-development-kit-v1.0.0.zip
+kaggle-development-kit-v1.0.0.zip.sha256
+```
+
+Before tagging `v1.0.0`, build the ZIP, extract it into a clean directory, and require all of the following:
+
+```bash
+sha256sum -c MANIFEST.sha256
+(cd install && sha256sum -c MANIFEST.sha256)
+find . -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
+bash tests/test-qdrant-acceptance-permissions.sh
+bash tests/test-load-config.sh
+bash tests/test-qdrant-config.sh
+bash tests/test-qdrant-installer.sh
+bash tests/test-qdrant-cli.sh
+bash tests/integration-qdrant-adapter.sh
+bash tests/test-release-hygiene.sh
+(cd install/sqlite3 && sha256sum -c SHA256SUMS)
+(cd install/sqlite3-original-build && sha256sum -c SHA256SUMS)
+```
+
+Also validate `notebooks/kaggle-dev-bootstrap.ipynb` with `nbformat.validate`, scan ZIP entries for forbidden runtime/private paths, and verify the generated `.zip.sha256` sidecar. The project should be tagged `v1.0.0` only after this extracted-artifact gate passes.
