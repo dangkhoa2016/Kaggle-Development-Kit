@@ -2,14 +2,18 @@
 
 > 🌐 Language / Ngôn ngữ: **English** | [Tiếng Việt](CHANGES.vi.md)
 
-## 2026-08-22 — Qdrant Native Portable integration
+## 2026-08-22 — Qdrant Native Portable integration / v1.0.0 finalization
 
 - Added `install/install-qdrant.sh` as a thin adapter over Qdrant Native Portable (QNP) 1.0.0 pinned to commit `464cb5dbc1117a8a8a6472d76a10c5e329021156`.
 - Added exact multi-version Qdrant configuration, isolated `.system/qdrant/instances/<version>/` state, REST/gRPC port validation, and loopback-only endpoints.
 - Added `bin/kdev qdrant ...`, Qdrant/QNP reporting in `bin/kdev versions`, and Qdrant-aware `scripts/doctor.sh` checks.
 - Added Qdrant to notebook Cell 2 and global automatic port allocation/collision detection.
 - QNP public tunnel/proxy mode is disabled by the adapter; Qdrant is local-development-only in this kit.
-- The release candidate targets Qdrant 1.18.3 only. Final Kaggle validation remains gated by `tests/acceptance-qdrant.sh`; other exact versions remain configurable but unvalidated until separately tested.
+- Real native Kaggle acceptance passed for Qdrant `1.18.3`: fresh install, `/readyz`, vector upsert/read/search, restart persistence, idempotent second install, doctor, loopback-only binding, no public tunnel, and secret-safe summary checks.
+- Added a regression for acceptance-root traversal in `service-user` mode while keeping `qdrant.env` private.
+- Hardened the release-hygiene fixture so live `.system/` runtime sockets are not traversed during source-copy setup.
+- The v1.0.0 public artifact is named `kaggle-development-kit-v1.0.0.zip`; final tagging remains gated on clean extracted-artifact verification.
+- Qdrant `1.18.3` is the validated v1.0.0 target. Other exact versions remain configurable but require separate validation.
 
 ## 2026-08-12 — GitHub-first multi-version architecture
 
@@ -23,7 +27,6 @@
 - Hardened the public release boundary: generated runtime state, secrets, SSH identity, logs, caches, and local `.kaggle-dev.env` are excluded.
 - Public release tooling now creates only a public-source archive; private runtime snapshots are intentionally not produced by the public release script.
 
-
 - Added a shared root/sudo abstraction; root no longer depends on the `sudo` binary.
 - Separated the PostgreSQL/Redis runtime from data, log and PID.
 - Packages are downloaded into `.system/.staging/`, verified, then runtime is swapped atomically.
@@ -35,9 +38,7 @@
 - PostgreSQL/Redis ports are applied correctly when the installer is re-run.
 - Helpers verify the cluster/PID, avoiding control of another service using the same port.
 - Redis uses the distro repository by default; the official repository is optional.
-- The Redis installer only downloads the runtime when `.system/redis/runtime`
-  does not exist; changing `REDIS_REPOSITORY` requires moving the old runtime
-  aside before re-running (see `install/README.md`).
+- The Redis installer only downloads the runtime when `.system/redis/runtime` does not exist; changing `REDIS_REPOSITORY` requires moving the old runtime aside before re-running (see `install/README.md`).
 - Redis runs under a system user; the daemon no longer runs under root.
 - mise is pinned by version; the official installer verifies the release checksum.
 - `mise use --pin --path` updates tool versions while keeping the other sections of `mise.toml`.
@@ -73,5 +74,4 @@
 - Added persistent SSH identity support with `HostKeyAlias` and ED25519 fingerprint output.
 - Temporary ngrok token config is removed after the tunnel becomes ready.
 - Added `scripts/doctor.sh`, `scripts/refresh-manifest.sh`, and `scripts/build-release-zips.sh`.
-- Added `POSTGRES_FORCE_RUNTIME_REFRESH=1` and `REDIS_FORCE_RUNTIME_REFRESH=1` to
-  refresh runtimes after base-image changes while preserving data.
+- Added `POSTGRES_FORCE_RUNTIME_REFRESH=1` and `REDIS_FORCE_RUNTIME_REFRESH=1` to refresh runtimes after base-image changes while preserving data.
