@@ -1,10 +1,14 @@
-# Kaggle Development Environment
+# Kaggle Development Kit
 
 > 🌐 Language / Ngôn ngữ: **English** | [Tiếng Việt](README.vi.md)
 
 A GitHub-first bootstrap project for turning a Kaggle Notebook session into a reusable Linux development environment. It can install and manage **SQLite, multiple PostgreSQL + pgvector versions, multiple exact Redis versions, multiple Elastic Stack versions, Qdrant, mise/Node/Ruby/npm/Yarn, OpenSSH, ngrok, and tmux** without Docker.
 
 The recommended entry point is [`notebooks/kaggle-dev-bootstrap.ipynb`](notebooks/kaggle-dev-bootstrap.ipynb): Cell 1 fetches the repository from GitHub; Cell 2 is the user-editable version/port configuration.
+
+## v1.0.0 validation baseline
+
+The Qdrant adapter has completed its real Kaggle acceptance gate with native Qdrant `1.18.3`, pinned Qdrant Native Portable (QNP) `1.0.0` at commit `464cb5dbc1117a8a8a6472d76a10c5e329021156`. The run passed fresh installation, `/readyz`, vector upsert/read/search, restart persistence, idempotent second install, doctor checks, loopback-only binding, no public tunnel, and secret-safe summary checks. The release-finalization branch still requires the final source ZIP to be built, extracted, and re-verified before the `v1.0.0` tag is created.
 
 ## Public-repository design
 
@@ -63,7 +67,7 @@ QNP_SOURCE_COMMIT="464cb5dbc1117a8a8a6472d76a10c5e329021156"
 
 Version installation and process startup are separate concerns. You may install multiple versions while starting only one. Elastic defaults to **no auto-start** because running several full stacks at once is expensive in RAM and CPU.
 
-Qdrant is integrated through a thin adapter over a **pinned Qdrant Native Portable (QNP) 1.0.0 source commit**. QNP remains the authority for Qdrant-native setup, lifecycle, strict-mode defaults, and local storage layout; this repository adds Kaggle configuration, version isolation, port allocation, `kdev`, and release hygiene. Qdrant **1.18.3** is the only release-candidate target covered by the real acceptance gate. Other exact `X.Y.Z` versions are configurable but must be tested separately. Final Kaggle validation remains gated by `tests/acceptance-qdrant.sh`.
+Qdrant is integrated through a thin adapter over a **pinned Qdrant Native Portable (QNP) 1.0.0 source commit**. QNP remains the authority for Qdrant-native setup, lifecycle, strict-mode defaults, and local storage layout; this repository adds Kaggle configuration, version isolation, port allocation, `kdev`, and release hygiene. Qdrant **1.18.3** is the validated v1.0.0 target. Other exact `X.Y.Z` versions are configurable but must be validated separately before being treated as supported release baselines.
 
 ## Multi-version layout
 
@@ -171,13 +175,14 @@ sha256sum -c MANIFEST.sha256
 (cd install && sha256sum -c MANIFEST.sha256)
 ```
 
-Build a source-only public release ZIP:
+Build the v1.0.0 source-only public release ZIP:
 
 ```bash
 bash scripts/build-release-zips.sh
+sha256sum kaggle-development-kit-v1.0.0.zip > kaggle-development-kit-v1.0.0.zip.sha256
 ```
 
-The release script deliberately excludes `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, and existing ZIP files.
+The release script deliberately excludes `.git/`, `.system/`, `.kaggle-ssh/`, `.kaggle-dev.env`, local environment files, logs, PIDs, sockets, private-key patterns, runtime secrets, and existing ZIP files.
 
 ## Security boundary
 
