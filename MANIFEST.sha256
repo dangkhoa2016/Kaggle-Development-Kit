@@ -39,10 +39,10 @@ e4f706af4194b5a5f6f9957c3bb0c85616d7eb9d9ac0f6a5e203a16e3fab8c0f  ./mise.toml
 8b126a5f10b962bb278810cabc9892cc390a232a963ce11010d4feb30999f1a8  ./notebooks/kaggle-dev-bootstrap.ipynb
 215d2b19e6ac64bdb03cfb1e271f8647a8b7739a18c5f5f0697fb723e3ed11a6  ./README.md
 4e336ebcc361dbfd1d8fe42d58e4c0c52f2aaf592cb917ae6d25acfb46c78655  ./README.vi.md
-834654c9dfb181bfd6c10847dc34866a3d533cb1382027f09395d426968873cc  ./scripts/build-release-zips.sh
+4eed10e555720e42ff555da921ca49727c30a03bd2616c982a604c60063d158b  ./scripts/build-release-zips.sh
 73da99ec4e97f80ceffa338b1df4b1b45dd23909783b4bfc6ad5fb41eee6ee09  ./scripts/doctor.sh
 0c29d18eb4498de43c8312737664fc3a4b70eb11ec74e9dce4b751d3dda1d8b3  ./scripts/rebuild-sqlite-tools.sh
-989faaa5d70a53daa0ee2b7e80103e5c2f11a9462428db52dc7f90dd1638528d  ./scripts/refresh-manifest.sh
+55c769bef7438828eec7f980a88c35457a3354219e75549044ffd5ceb0c3dd60  ./scripts/refresh-manifest.sh
 1d9c23a4f06af577630f2e7b3976acc0d5cebd6474751f92719e9c87594b15c4  ./SECURITY.md
 b50ed22a43d20e08c0925d80bb48950f3f948a8f34a3e1c2eee5a335e29dd089  ./SECURITY.vi.md
 7bbd61f322e1da30731bc296c523f127d3788900a33cedf80265ad4275f5b7b9  ./setup.sh
@@ -53,6 +53,6 @@ b50ed22a43d20e08c0925d80bb48950f3f948a8f34a3e1c2eee5a335e29dd089  ./SECURITY.vi.
 8b047f9758512680c79c07b59ce1cd04445f811b97493573f6dd54383f059e02  ./tests/test-qdrant-cli.sh
 b4cb3b8e18d1a37457be95b6ae7a53f6874e05ea10586856850730671c70880e  ./tests/test-qdrant-config.sh
 0aef32e2b2fc7c14a0acd72c6c6731131371ebad25a8847dcb094821030fe96a  ./tests/test-qdrant-installer.sh
-f9e380c191fc7a5075348fb4aa87bb9871897a2a1e664016ec2ad89c7528ea03  ./tests/test-release-hygiene.sh
+d6355b2e95298b9c79011f3374bce64c98fa1cb8f996b53c0cbe2e0ffa356b59  ./tests/test-release-hygiene.sh
 114f22cf60afded28f1d352b976db027e53f30404fd3178de5403abd58faed70  ./THIRD_PARTY_NOTICES.md
 a9893b41f1502190fd91a784357ad4fc400b00de0bdc1a9da205692c14b1166e  ./THIRD_PARTY_NOTICES.vi.md
