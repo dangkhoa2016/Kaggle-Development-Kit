@@ -2,14 +2,18 @@
 
 > 🌐 Language / Ngôn ngữ: [English](CHANGES.md) | **Tiếng Việt**
 
-## 2026-08-22 — Tích hợp Qdrant Native Portable
+## 2026-08-22 — Tích hợp Qdrant Native Portable / finalization v1.0.0
 
 - Thêm `install/install-qdrant.sh` làm adapter mỏng trên Qdrant Native Portable (QNP) 1.0.0, pin tại commit `464cb5dbc1117a8a8a6472d76a10c5e329021156`.
 - Thêm cấu hình Qdrant exact multi-version, state cô lập trong `.system/qdrant/instances/<version>/`, validate REST/gRPC port và endpoint chỉ bind loopback.
 - Thêm `bin/kdev qdrant ...`, hiển thị Qdrant/QNP trong `bin/kdev versions`, và kiểm tra Qdrant trong `scripts/doctor.sh`.
 - Thêm Qdrant vào Cell 2 của notebook và cơ chế tự cấp/phát hiện trùng port toàn cục.
 - Adapter tắt public tunnel/proxy của QNP; Qdrant trong kit này chỉ phục vụ local development.
-- Release candidate chỉ target Qdrant 1.18.3. Final Kaggle validation vẫn yêu cầu `tests/acceptance-qdrant.sh` pass; exact version khác vẫn có thể cấu hình nhưng chưa được xem là validated cho tới khi test riêng.
+- Real native Kaggle acceptance đã pass cho Qdrant `1.18.3`: fresh install, `/readyz`, vector upsert/read/search, persistence sau restart, idempotent second install, doctor, loopback-only binding, không public tunnel và secret-safe summary checks.
+- Thêm regression cho acceptance-root traversal ở `service-user` mode trong khi vẫn giữ `qdrant.env` private.
+- Harden release-hygiene fixture để không traverse live `.system/` runtime socket khi chuẩn bị source copy.
+- Public artifact v1.0.0 có tên `kaggle-development-kit-v1.0.0.zip`; final tag vẫn chờ clean extracted-artifact verification.
+- Qdrant `1.18.3` là target đã validation cho v1.0.0. Exact version khác vẫn có thể cấu hình nhưng cần validation riêng.
 
 ## 2026-08-12 — Kiến trúc GitHub-first multi-version
 
@@ -23,7 +27,6 @@
 - Siết public release boundary: runtime state, secrets, SSH identity, log, cache và `.kaggle-dev.env` local đều bị loại trừ.
 - Release tooling public chỉ tạo public-source archive; script public không còn tạo private runtime snapshot.
 
-
 - Thêm abstraction root/sudo dùng chung; root không còn phụ thuộc binary `sudo`.
 - Tách runtime PostgreSQL/Redis khỏi data, log và PID.
 - Tải package vào `.system/.staging/`, kiểm tra rồi atomic swap runtime.
@@ -35,8 +38,7 @@
 - Port PostgreSQL/Redis được áp dụng đúng khi chạy lại installer.
 - Helper xác minh cluster/PID, tránh điều khiển nhầm service khác cùng port.
 - Redis mặc định dùng distro repository; repository chính thức là tùy chọn.
-- Redis installer chỉ tải runtime khi `.system/redis/runtime` chưa tồn tại; đổi
-  `REDIS_REPOSITORY` cần dời runtime cũ trước khi chạy lại (xem `install/README.vi.md`).
+- Redis installer chỉ tải runtime khi `.system/redis/runtime` chưa tồn tại; đổi `REDIS_REPOSITORY` cần dời runtime cũ trước khi chạy lại (xem `install/README.vi.md`).
 - Redis chạy dưới system user, không chạy daemon dưới root.
 - mise được pin version; installer chính thức xác minh checksum release.
 - `mise use --pin --path` cập nhật tool version mà giữ các section khác của `mise.toml`.
@@ -72,5 +74,4 @@
 - Thêm persistent SSH host identity với `HostKeyAlias` và ED25519 fingerprint.
 - Temporary ngrok config chứa token được xóa sau khi tunnel sẵn sàng.
 - Thêm `scripts/doctor.sh`, `scripts/refresh-manifest.sh`, `scripts/build-release-zips.sh`.
-- Thêm `POSTGRES_FORCE_RUNTIME_REFRESH=1` và `REDIS_FORCE_RUNTIME_REFRESH=1` để
-  refresh runtime khi base image thay đổi mà vẫn giữ data.
+- Thêm `POSTGRES_FORCE_RUNTIME_REFRESH=1` và `REDIS_FORCE_RUNTIME_REFRESH=1` để refresh runtime khi base image thay đổi mà vẫn giữ data.
