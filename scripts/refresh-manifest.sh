@@ -22,9 +22,21 @@ ROOT_FIND=(
   ! -path './.system/*'
   ! -path './.kaggle-ssh/*'
   ! -name '.kaggle-dev.env'
+  ! -name '.env'
+  ! -name '.env.*'
   ! -name 'MANIFEST.sha256'
   ! -name '*.zip'
   ! -name '*.zip.sha256'
+  ! -name '*.log'
+  ! -name '*.pid'
+  ! -name '*.sock'
+  ! -name '*.pem'
+  ! -name '*.key'
+  ! -name '*.p12'
+  ! -name '*.pfx'
+  ! -name 'secrets.env'
+  ! -name 'runtime.env'
+  ! -name '.qdrant-base'
 )
 if [ -n "$EXCLUDE_DIR" ]; then
   ROOT_FIND+=( ! -path "./$EXCLUDE_DIR" ! -path "./$EXCLUDE_DIR/*" )
@@ -38,8 +50,20 @@ chmod 644 MANIFEST.sha256
   INSTALL_FIND=(
     find . -type f
     ! -name 'MANIFEST.sha256'
+    ! -name '.env'
+    ! -name '.env.*'
     ! -name '*.zip'
     ! -name '*.zip.sha256'
+    ! -name '*.log'
+    ! -name '*.pid'
+    ! -name '*.sock'
+    ! -name '*.pem'
+    ! -name '*.key'
+    ! -name '*.p12'
+    ! -name '*.pfx'
+    ! -name 'secrets.env'
+    ! -name 'runtime.env'
+    ! -name '.qdrant-base'
   )
   if [[ "$EXCLUDE_DIR" == install/* ]]; then
     INSTALL_EXCLUDE_DIR="${EXCLUDE_DIR#install/}"
