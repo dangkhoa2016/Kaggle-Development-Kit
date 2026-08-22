@@ -4,9 +4,24 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 COPY="$TMP/kaggle-dev-environment"
+SOURCE_COPY_ERR="$TMP/source-copy.err"
 mkdir -p "$COPY"
-# Preserve source files/symlinks but exclude the local Git worktree itself.
-tar -C "$ROOT" --exclude=.git --exclude='*.zip' -cf - . | tar -C "$COPY" -xf -
+# Preserve source files/symlinks while excluding local runtime/private state.
+# The release-hygiene fixture must not inspect live sockets under .system/.
+tar -C "$ROOT" \
+  --exclude='./.git' \
+  --exclude='./.system' \
+  --exclude='./.kaggle-ssh' \
+  --exclude='./.kaggle-dev.env' \
+  --exclude='./.env' \
+  --exclude='./.env.*' \
+  --exclude='*.zip' \
+  -cf - . 2>"$SOURCE_COPY_ERR" | tar -C "$COPY" -xf -
+if [ -s "$SOURCE_COPY_ERR" ]; then
+  echo 'unexpected warning/error while copying release-hygiene source fixture:' >&2
+  cat "$SOURCE_COPY_ERR" >&2
+  exit 1
+fi
 
 mkdir -p "$COPY/debug" "$COPY/.system/qdrant/instances/1.18.3/run" "$COPY/.kaggle-ssh"
 printf 'secret\n' > "$COPY/debug/private.key"
