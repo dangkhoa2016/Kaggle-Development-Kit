@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  deterministic-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify root and install manifests
+        run: |
+          if [ -f MANIFEST.sha256 ]; then
+            sha256sum -c MANIFEST.sha256
+          else
+            echo "Root manifest is not introduced at this historical commit; skipping."
+          fi
+          if [ -f install/MANIFEST.sha256 ]; then
+            (cd install && sha256sum -c MANIFEST.sha256)
+          else
+            echo "Install manifest is not introduced at this historical commit; skipping."
+          fi
+
+      - name: Bash syntax check
+        run: |
+          git ls-files '*.sh' | while IFS= read -r f; do
+            bash -n "$f" || exit 1
+          done
+
+      - name: Deterministic test suite
+        run: |
+          bash tests/test-load-config.sh
+          bash tests/test-qdrant-config.sh
+          bash tests/test-qdrant-installer.sh
+          bash tests/test-qnp-invalid-git-cache-reuse.sh
+          bash tests/test-qdrant-cli.sh
+          bash tests/integration-qdrant-adapter.sh
+          bash tests/test-qdrant-acceptance-permissions.sh
+          bash tests/test-qdrant-cold-restore.sh
+          bash tests/test-bootstrap-privilege.sh
+          bash tests/test-notebook-git-cold-restore.sh
+          bash tests/test-redis-cold-restore.sh
+          bash tests/test-redis-restore-no-build-deps.sh
+          bash tests/test-mise-cold-restore.sh
+          bash tests/test-mise-restore-no-network.sh
+          bash tests/test-ssh-openssh-install.sh
+          bash tests/test-connect-kaggle.sh
+          bash tests/test-connect-kaggle-restart-cleanup.sh
+          bash tests/test-system-dir.sh
+          bash tests/test-install-all-dispatch.sh
+          bash tests/test-install-all-cold-restore-reuse.sh
+          bash tests/test-elastic-config-seeding.sh
+          bash tests/test-setup-auto-system-dir.sh
+          bash tests/test-doctor-qnp-pin.sh
+          bash tests/test-doctor-mise-toolchain.sh
+          bash tests/test-release-hygiene.sh
+          bash tests/test-english-source-hygiene.sh
+
+      - name: SQLite binary checksums
+        run: |
+          (cd install/sqlite3 && sha256sum -c SHA256SUMS)
+          (cd install/sqlite3-original-build && sha256sum -c SHA256SUMS)
+
+      - name: Validate notebook JSON
+        run: python3 -m json.tool notebooks/kaggle-dev-bootstrap.ipynb > /dev/null
