@@ -1,0 +1,13 @@
+SQLite Public-Domain Notice
+===========================
+
+SQLite Project states that the SQLite core source code is in the public domain
+and that no license is required to use, copy, modify, or distribute it.
+
+Official reference:
+https://sqlite.org/copyright.html
+
+This notice is informational. Refer to the official SQLite site for the current
+and complete statement. Components used together with SQLite, including GNU
+Readline, Tcl, zlib, system libraries, extensions, or packaging scripts, may
+have separate licenses.
