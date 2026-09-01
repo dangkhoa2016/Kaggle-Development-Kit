@@ -140,7 +140,15 @@ qnp_source="$SYSTEM_DIR/qdrant/qnp/$qnp_source_name"
 if [ -n "$qnp_source_name" ] && [ -f "$qnp_source/VERSION" ]; then
   qnp_release_actual="$(tr -d '[:space:]' < "$qnp_source/VERSION")"
   qnp_commit_meta="$(sed -n 's/^commit=//p' "$qnp_source/.qnp-source-meta" 2>/dev/null | head -1)"
-  qnp_head_actual="$(git -C "$qnp_source" rev-parse HEAD 2>/dev/null || true)"
+  qnp_head_actual=""
+  qnp_git_root="$(git -C "$qnp_source" rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$qnp_git_root" ]; then
+    qnp_source_real="$(realpath -m "$qnp_source")"
+    qnp_git_root_real="$(realpath -m "$qnp_git_root")"
+    if [ "$qnp_git_root_real" = "$qnp_source_real" ]; then
+      qnp_head_actual="$(git -C "$qnp_source" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+    fi
+  fi
   if [ "$qnp_release_actual" != "${QNP_RELEASE:-1.0.0}" ]; then
     fail QNP "release mismatch: expected=${QNP_RELEASE:-1.0.0} actual=$qnp_release_actual"
   elif [ -z "$qnp_commit_meta" ]; then
