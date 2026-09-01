@@ -38,7 +38,7 @@ show_versions() {
   printf '  Elastic    : %s (default %s; auto-start: %s)\n' "${ELASTIC_VERSIONS:-9.5.0}" "${ELASTIC_DEFAULT_VERSION:-9.5.0}" "${ELASTIC_AUTO_START_VERSIONS:-none}"
   printf '  Components : %s\n' "${ELASTIC_COMPONENTS:-elasticsearch kibana logstash}"
   printf '  Qdrant     : %s (default %s; auto-start: %s)\n' "${QDRANT_VERSIONS:-1.18.3}" "${QDRANT_DEFAULT_VERSION:-1.18.3}" "${QDRANT_AUTO_START_VERSIONS:-none}"
-  printf '  QNP        : %s (commit %s)\n' "${QNP_RELEASE:-1.0.0}" "${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4}"
+  printf '  QNP        : %s (commit %s)\n' "${QNP_RELEASE:-1.0.0}" "${QNP_SOURCE_COMMIT:-21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca}"
   echo
   echo "Installed runtimes"
   local found=0 path version components

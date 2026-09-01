@@ -91,7 +91,7 @@ info Redis "${REDIS_VERSIONS:-8.10.0}; default=${REDIS_DEFAULT_VERSION:-8.10.0};
 info Elastic "${ELASTIC_VERSIONS:-9.5.0}; default=${ELASTIC_DEFAULT_VERSION:-9.5.0}; auto-start=${ELASTIC_AUTO_START_VERSIONS:-none}"
 info 'Elastic components' "${ELASTIC_COMPONENTS:-elasticsearch kibana logstash}"
 info Qdrant "${QDRANT_VERSIONS:-1.18.3}; default=${QDRANT_DEFAULT_VERSION:-1.18.3}; auto-start=${QDRANT_AUTO_START_VERSIONS:-none}"
-info QNP "release=${QNP_RELEASE:-1.0.0}; commit=${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4}"
+info QNP "release=${QNP_RELEASE:-1.0.0}; commit=${QNP_SOURCE_COMMIT:-21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca}"
 
 printf '\nSSH / tunnel\n'
 [ -f "$PROJECT_ROOT/setup.sh" ] && ok setup.sh 'present' || fail setup.sh 'missing'
@@ -153,12 +153,12 @@ if [ -n "$qnp_source_name" ] && [ -f "$qnp_source/VERSION" ]; then
     fail QNP "release mismatch: expected=${QNP_RELEASE:-1.0.0} actual=$qnp_release_actual"
   elif [ -z "$qnp_commit_meta" ]; then
     fail QNP 'source cache lacks .qnp-source-meta commit; pin unverifiable'
-  elif [ "$qnp_commit_meta" != "${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4}" ]; then
-    fail QNP "pin mismatch: expected=${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4} metadata=$qnp_commit_meta"
+  elif [ "$qnp_commit_meta" != "${QNP_SOURCE_COMMIT:-21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca}" ]; then
+    fail QNP "pin mismatch: expected=${QNP_SOURCE_COMMIT:-21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca} metadata=$qnp_commit_meta"
   elif [ -z "$qnp_head_actual" ]; then
     warn QNP "release=$qnp_release_actual; metadata commit=$qnp_commit_meta matches expected pin, but checkout HEAD is unavailable; source tree identity cannot be independently verified"
-  elif [ "$qnp_head_actual" != "${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4}" ]; then
-    fail QNP "pin mismatch: expected=${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4} checkout HEAD=$qnp_head_actual"
+  elif [ "$qnp_head_actual" != "${QNP_SOURCE_COMMIT:-21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca}" ]; then
+    fail QNP "pin mismatch: expected=${QNP_SOURCE_COMMIT:-21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca} checkout HEAD=$qnp_head_actual"
   else
     ok QNP "release=$qnp_release_actual; commit=$qnp_commit_meta"
   fi

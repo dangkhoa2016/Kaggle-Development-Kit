@@ -1,5 +1,9 @@
 # Kaggle Development Kit
 
+[![CI](https://github.com/dangkhoa2016/Kaggle-Development-Kit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dangkhoa2016/Kaggle-Development-Kit/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/dangkhoa2016/Kaggle-Development-Kit?display_name=tag&sort=semver)](https://github.com/dangkhoa2016/Kaggle-Development-Kit/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/dangkhoa2016/Kaggle-Development-Kit)](LICENSE)
+
 > 🌐 Language / Ngôn ngữ: **English** | [Tiếng Việt](README.vi.md)
 
 A GitHub-first bootstrap project for turning a Kaggle Notebook session into a reusable Linux development environment. It can install and manage **SQLite, multiple PostgreSQL + pgvector versions, multiple exact Redis versions, multiple Elastic Stack versions, Qdrant, mise/Node/Ruby/npm/Yarn, OpenSSH, ngrok, and tmux** without Docker.
@@ -8,7 +12,7 @@ The recommended entry point is [`notebooks/kaggle-dev-bootstrap.ipynb`](notebook
 
 ## Validated baseline
 
-The documented v1.0.0 baseline uses native Qdrant `1.18.3` through [Qdrant Native Portable (QNP)](https://github.com/dangkhoa2016/Qdrant-Native-Portable) `1.0.0` (authored by the same developer), pinned to commit `464cb5dbc1117a8a8a6472d76a10c5e329021156`. This combination has been validated on Kaggle for fresh installation, `/readyz`, vector upsert/read/search, restart persistence, idempotent reinstall, doctor checks, loopback-only binding, no public tunnel, and secret-safe output. See [`install/VALIDATION.md`](install/VALIDATION.md) for the recorded baseline and reproducible checks.
+The documented v1.0.0 baseline uses native Qdrant `1.18.3` through [Qdrant Native Portable (QNP)](https://github.com/dangkhoa2016/Qdrant-Native-Portable) `1.0.0` (authored by the same developer), pinned to commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca`. This combination has been validated on Kaggle for fresh installation, `/readyz`, vector upsert/read/search, restart persistence, idempotent reinstall, doctor checks, loopback-only binding, no public tunnel, and secret-safe output. See [`install/VALIDATION.md`](install/VALIDATION.md) for the recorded baseline and reproducible checks.
 
 ## Public-repository design
 
@@ -62,7 +66,7 @@ QDRANT_AUTO_START_VERSIONS="1.18.3"
 
 # Qdrant Native Portable source authority
 QNP_RELEASE="1.0.0"
-QNP_SOURCE_COMMIT="464cb5dbc1117a8a8a6472d76a10c5e329021156"
+QNP_SOURCE_COMMIT="21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca"
 ```
 
 Version installation and process startup are separate concerns. You may install multiple versions while starting only one. Elastic defaults to **no auto-start** because running several full stacks at once is expensive in RAM and CPU.

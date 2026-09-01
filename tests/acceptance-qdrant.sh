@@ -45,7 +45,7 @@ QDRANT_ENABLE_GRPC=0
 QDRANT_AUTO_START_VERSIONS="$VERSION"
 QDRANT_PROFILE=low-memory
 QNP_RELEASE=1.0.0
-QNP_SOURCE_COMMIT=066084be23d23a5be11ca8e5df28d5da9eef1cc4
+QNP_SOURCE_COMMIT=21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca
 CFG
 chmod 600 "$CFG"
 
@@ -80,8 +80,8 @@ bash "$ROOT/install/install-qdrant.sh" | tee "$EVIDENCE/install-first.log"
 
 [ -x "$HELPER" ]
 [ -x "$INSTANCE/qdrant-$VERSION/qdrant" ]
-[ "$(tr -d '[:space:]' < "$SYSTEM/qdrant/qnp/1.0.0-066084be23d2/VERSION")" = '1.0.0' ]
-grep -qx 'commit=066084be23d23a5be11ca8e5df28d5da9eef1cc4' "$SYSTEM/qdrant/qnp/1.0.0-066084be23d2/.qnp-source-meta"
+[ "$(tr -d '[:space:]' < "$SYSTEM/qdrant/qnp/1.0.0-21f83a6df741/VERSION")" = '1.0.0' ]
+grep -qx 'commit=21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca' "$SYSTEM/qdrant/qnp/1.0.0-21f83a6df741/.qnp-source-meta"
 
 "$ROOT/bin/kdev" qdrant "$VERSION" health | tee "$EVIDENCE/health-first.txt"
 curl -fsS --max-time 5 "http://127.0.0.1:$PORT/readyz" > "$EVIDENCE/readyz.txt"
@@ -175,7 +175,7 @@ grep -q 'Result: OK' "$EVIDENCE/doctor.txt"
 cat > "$EVIDENCE/SUMMARY.txt" <<SUMMARY
 Qdrant Kaggle Development Kit acceptance
 qnp_release=1.0.0
-qnp_commit=066084be23d23a5be11ca8e5df28d5da9eef1cc4
+qnp_commit=21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca
 qdrant_version=$VERSION
 rest_endpoint=127.0.0.1:$PORT
 bind_scope=loopback-only

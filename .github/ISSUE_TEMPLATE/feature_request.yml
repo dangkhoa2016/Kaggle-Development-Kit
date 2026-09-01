@@ -1,0 +1,49 @@
+name: Feature request
+description: Propose a focused improvement to Kaggle Development Kit.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature proposals are easiest to review when they explain the user problem, expected behavior, and compatibility implications rather than only suggesting an implementation.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and pull requests for a similar proposal.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What user problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the observable behavior or workflow you want.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Note existing workarounds or other approaches you considered.
+  - type: checkboxes
+    id: impact
+    attributes:
+      label: Potential impact
+      options:
+        - label: Changes persistence or cold-restore behavior
+        - label: Changes network exposure, SSH, tunnels, or security boundaries
+        - label: Changes installer or version compatibility
+        - label: Changes public CLI or notebook workflow
+        - label: Changes release packaging or integrity behavior
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add technical constraints, examples, or links that help evaluate the proposal.

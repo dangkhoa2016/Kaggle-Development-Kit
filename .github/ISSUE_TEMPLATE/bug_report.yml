@@ -1,0 +1,85 @@
+name: Bug report
+description: Report a reproducible problem in a documented Kaggle Development Kit workflow.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Remove or sanitize secrets, private keys, tokens, tunnel details, database contents, and other private runtime data before submitting.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: I removed or sanitized sensitive information from the report.
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Project version or commit
+      description: Release tag or full/short Git commit used for the reproduction.
+      placeholder: v1.0.0 or 4a30e01
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Kaggle bootstrap notebook
+        - Installer / configuration
+        - PostgreSQL / pgvector
+        - Redis
+        - Elastic Stack
+        - Qdrant / QNP
+        - mise / language runtimes
+        - SSH / ngrok
+        - connect-kaggle.sh / port forwarding
+        - doctor / diagnostics
+        - release / manifest tooling
+        - documentation
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Kaggle image/session details, local OS or Codespaces details, and relevant configured versions.
+      placeholder: |
+        Kaggle session:
+        Client environment:
+        Relevant versions:
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest reliable sequence that reproduces the problem.
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or diagnostics
+      description: Paste only the minimum relevant output. Do not include credentials or private runtime data.
+      render: shell

@@ -7,7 +7,7 @@ SYSTEM="$TMP/system"
 CFG="$TMP/config.env"
 mkdir -p "$SYSTEM/qdrant/instances/1.18.3/qdrant-1.18.3" \
          "$SYSTEM/qdrant/instances/1.18.3/config" \
-         "$SYSTEM/qdrant/qnp/1.0.0-066084be23d2"
+         "$SYSTEM/qdrant/qnp/1.0.0-21f83a6df741"
 cat > "$CFG" <<'CFG'
 INSTALL_QDRANT=1
 QDRANT_VERSIONS="1.18.2 1.18.3"
@@ -20,10 +20,10 @@ QDRANT_ENABLE_GRPC=0
 QDRANT_AUTO_START_VERSIONS="1.18.3"
 QDRANT_PROFILE=auto
 QNP_RELEASE=1.0.0
-QNP_SOURCE_COMMIT=066084be23d23a5be11ca8e5df28d5da9eef1cc4
+QNP_SOURCE_COMMIT=21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca
 CFG
 printf '1.18.3\n' > "$SYSTEM/qdrant/default-version"
-printf '1.0.0-066084be23d2\n' > "$SYSTEM/qdrant/qnp-source-name"
+printf '1.0.0-21f83a6df741\n' > "$SYSTEM/qdrant/qnp-source-name"
 printf 'qdrantuser\n' > "$SYSTEM/qdrant/service-user"
 printf '1.18.3\n' > "$SYSTEM/qdrant/instances/1.18.3/kdev-version"
 printf '6333\n' > "$SYSTEM/qdrant/instances/1.18.3/kdev-rest-port"
@@ -41,10 +41,10 @@ cat > "$SYSTEM/qdrant/instances/1.18.3/qdrant-1.18.3/qdrant" <<'BIN'
 printf 'qdrant 1.18.3\n'
 BIN
 chmod +x "$SYSTEM/qdrant/instances/1.18.3/qdrant-1.18.3/qdrant"
-printf '1.0.0\n' > "$SYSTEM/qdrant/qnp/1.0.0-066084be23d2/VERSION"
-cat > "$SYSTEM/qdrant/qnp/1.0.0-066084be23d2/.qnp-source-meta" <<'META'
+printf '1.0.0\n' > "$SYSTEM/qdrant/qnp/1.0.0-21f83a6df741/VERSION"
+cat > "$SYSTEM/qdrant/qnp/1.0.0-21f83a6df741/.qnp-source-meta" <<'META'
 release=1.0.0
-commit=066084be23d23a5be11ca8e5df28d5da9eef1cc4
+commit=21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca
 origin=https://github.com/dangkhoa2016/Qdrant-Native-Portable.git
 META
 cat > "$SYSTEM/qdrant-service.sh" <<'HELPER'
@@ -78,7 +78,7 @@ versions="$(run_kdev versions)"
 grep -q 'Qdrant' <<<"$versions"
 grep -q '1.18.2 1.18.3' <<<"$versions"
 grep -q 'QNP.*1.0.0' <<<"$versions"
-grep -q '066084be23d2' <<<"$versions"
+grep -q '21f83a6df741' <<<"$versions"
 
 # Doctor must understand configured + installed Qdrant state without treating a
 # stopped instance as broken.

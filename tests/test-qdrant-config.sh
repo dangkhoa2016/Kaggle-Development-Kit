@@ -21,7 +21,7 @@ required = {
     "QDRANT_ENABLE_GRPC=0",
     'QDRANT_AUTO_START_VERSIONS="1.18.3"',
     "QNP_RELEASE=1.0.0",
-    "QNP_SOURCE_COMMIT=066084be23d23a5be11ca8e5df28d5da9eef1cc4",
+    "QNP_SOURCE_COMMIT=21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca",
 }
 for needle in required:
     assert needle in defaults, f"defaults missing: {needle}"
@@ -65,7 +65,7 @@ assert values["QDRANT_GRPC_PORT_1_18_3"] == "6334"
 assert values["QDRANT_ENABLE_GRPC"] == "0"
 assert values["QDRANT_AUTO_START_VERSIONS"] == "1.18.3"
 assert values["QNP_RELEASE"] == "1.0.0"
-assert values["QNP_SOURCE_COMMIT"] == "066084be23d23a5be11ca8e5df28d5da9eef1cc4"
+assert values["QNP_SOURCE_COMMIT"] == "21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca"
 
 # Missing ports are assigned deterministically, avoiding all ports already used
 # by PostgreSQL/Redis/Elastic and the pinned Qdrant default.

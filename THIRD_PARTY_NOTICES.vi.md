@@ -54,7 +54,7 @@ Default distribution của Elastic được publish theo Elastic License 2.0 (EL
 
 ## Qdrant và Qdrant Native Portable
 
-Repository không đóng gói Qdrant binary hoặc QNP source checkout. `install/install-qdrant.sh` fetch QNP `1.0.0` (từ repository mã nguồn mở [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable) của cùng tác giả) tại đúng Git commit `066084be23d23a5be11ca8e5df28d5da9eef1cc4` khi chạy. QNP release được pin này dùng MIT License. Sau đó QNP source đã pin tải official Qdrant release binary được chọn vào runtime tree `.system/` đã gitignore.
+Repository không đóng gói Qdrant binary hoặc QNP source checkout. `install/install-qdrant.sh` fetch QNP `1.0.0` (từ repository mã nguồn mở [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable) của cùng tác giả) tại đúng Git commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca` khi chạy. QNP release được pin này dùng MIT License. Sau đó QNP source đã pin tải official Qdrant release binary được chọn vào runtime tree `.system/` đã gitignore.
 
 Qdrant **v1.18.3** là release Qdrant đã được validation cho baseline v1.0.0, dùng Apache License 2.0 trong upstream `qdrant/qdrant`. Các Qdrant version khác mà người dùng có thể chọn giữ license đi kèm đúng upstream release đó và cần được kiểm tra riêng. Public source ZIP của repository này không redistribute QNP hoặc Qdrant.
 

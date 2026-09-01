@@ -4,7 +4,7 @@
 
 ## 2026-08-22 — Qdrant Native Portable integration
 
-- Added `install/install-qdrant.sh` as a thin adapter over Qdrant Native Portable (QNP) 1.0.0 pinned to commit `066084be23d23a5be11ca8e5df28d5da9eef1cc4`.
+- Added `install/install-qdrant.sh` as a thin adapter over Qdrant Native Portable (QNP) 1.0.0 pinned to commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca`.
 - Added exact multi-version Qdrant configuration, isolated `.system/qdrant/instances/<version>/` state, REST/gRPC port validation, and loopback-only endpoints.
 - Added `bin/kdev qdrant ...`, Qdrant/QNP reporting in `bin/kdev versions`, and Qdrant-aware `scripts/doctor.sh` checks.
 - Added Qdrant to notebook Cell 2 and global automatic port allocation/collision detection.

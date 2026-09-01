@@ -4,7 +4,7 @@
 
 ## 2026-08-22 — Tích hợp Qdrant Native Portable
 
-- Thêm `install/install-qdrant.sh` làm adapter mỏng trên Qdrant Native Portable (QNP) 1.0.0, pin tại commit `066084be23d23a5be11ca8e5df28d5da9eef1cc4`.
+- Thêm `install/install-qdrant.sh` làm adapter mỏng trên Qdrant Native Portable (QNP) 1.0.0, pin tại commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca`.
 - Thêm cấu hình Qdrant exact multi-version, state cô lập trong `.system/qdrant/instances/<version>/`, validate REST/gRPC port và endpoint chỉ bind loopback.
 - Thêm `bin/kdev qdrant ...`, hiển thị Qdrant/QNP trong `bin/kdev versions`, và kiểm tra Qdrant trong `scripts/doctor.sh`.
 - Thêm Qdrant vào Cell 2 của notebook và cơ chế tự cấp/phát hiện trùng port toàn cục.

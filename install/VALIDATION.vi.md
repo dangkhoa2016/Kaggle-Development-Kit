@@ -10,7 +10,7 @@ Tài liệu này ghi lại một baseline validation có thể chạy lại cho 
 
 ```text
 QNP release: 1.0.0
-QNP commit: 066084be23d23a5be11ca8e5df28d5da9eef1cc4
+QNP commit: 21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca
 Qdrant: 1.18.3
 REST acceptance endpoint: 127.0.0.1:16333
 bind scope: loopback-only

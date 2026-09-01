@@ -73,6 +73,6 @@ QDRANT_AUTO_START_VERSIONS="1.18.3" \
 bash install/install-qdrant.sh
 ```
 
-The adapter pins QNP `1.0.0` (from the author's [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable) repository) at commit `066084be23d23a5be11ca8e5df28d5da9eef1cc4`, uses native single-node mode, binds Qdrant to `127.0.0.1`, and disables QNP public access. Each exact Qdrant version gets a separate `.system/qdrant/instances/<version>/` tree. Qdrant **1.18.3** is the validated v1.0.0 baseline; other exact versions are configurable but should be validated independently before being treated as supported baselines.
+The adapter pins QNP `1.0.0` (from the author's [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable) repository) at commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca`, uses native single-node mode, binds Qdrant to `127.0.0.1`, and disables QNP public access. Each exact Qdrant version gets a separate `.system/qdrant/instances/<version>/` tree. Qdrant **1.18.3** is the validated v1.0.0 baseline; other exact versions are configurable but should be validated independently before being treated as supported baselines.
 
 See the root README, [`VALIDATION.md`](VALIDATION.md), and `notebooks/kaggle-dev-bootstrap.ipynb` for the public usage and validation workflow.

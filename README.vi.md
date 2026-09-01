@@ -1,5 +1,9 @@
 # Kaggle Development Kit
 
+[![CI](https://github.com/dangkhoa2016/Kaggle-Development-Kit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dangkhoa2016/Kaggle-Development-Kit/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/dangkhoa2016/Kaggle-Development-Kit?display_name=tag&sort=semver)](https://github.com/dangkhoa2016/Kaggle-Development-Kit/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/dangkhoa2016/Kaggle-Development-Kit)](LICENSE)
+
 > 🌐 Language / Ngôn ngữ: [English](README.md) | **Tiếng Việt**
 
 Dự án bootstrap theo hướng **GitHub-first** để biến một phiên Kaggle Notebook thành môi trường Linux phục vụ development. Dự án có thể cài và quản lý **SQLite, nhiều phiên bản PostgreSQL + pgvector, nhiều phiên bản Redis chính xác, nhiều phiên bản Elastic Stack, Qdrant, mise/Node/Ruby/npm/Yarn, OpenSSH, ngrok và tmux** mà không cần Docker.
@@ -8,7 +12,7 @@ Dự án bootstrap theo hướng **GitHub-first** để biến một phiên Kagg
 
 ## Baseline đã được xác minh
 
-Baseline v1.0.0 được tài liệu hóa sử dụng Qdrant native `1.18.3` thông qua [Qdrant Native Portable (QNP)](https://github.com/dangkhoa2016/Qdrant-Native-Portable) `1.0.0` (dự án của cùng tác giả), pin tại commit `464cb5dbc1117a8a8a6472d76a10c5e329021156`. Tổ hợp này đã được xác minh trên Kaggle với fresh install, `/readyz`, vector upsert/read/search, persistence sau restart, cài lại idempotent, doctor checks, bind chỉ trên loopback, không public tunnel và output không lộ secret. Xem [`install/VALIDATION.vi.md`](install/VALIDATION.vi.md) để biết baseline đã ghi nhận và cách kiểm tra có thể chạy lại.
+Baseline v1.0.0 được tài liệu hóa sử dụng Qdrant native `1.18.3` thông qua [Qdrant Native Portable (QNP)](https://github.com/dangkhoa2016/Qdrant-Native-Portable) `1.0.0` (dự án của cùng tác giả), pin tại commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca`. Tổ hợp này đã được xác minh trên Kaggle với fresh install, `/readyz`, vector upsert/read/search, persistence sau restart, cài lại idempotent, doctor checks, bind chỉ trên loopback, không public tunnel và output không lộ secret. Xem [`install/VALIDATION.vi.md`](install/VALIDATION.vi.md) để biết baseline đã ghi nhận và cách kiểm tra có thể chạy lại.
 
 ## Thiết kế dành cho public repository
 
@@ -62,7 +66,7 @@ QDRANT_AUTO_START_VERSIONS="1.18.3"
 
 # Source authority của Qdrant Native Portable
 QNP_RELEASE="1.0.0"
-QNP_SOURCE_COMMIT="464cb5dbc1117a8a8a6472d76a10c5e329021156"
+QNP_SOURCE_COMMIT="21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca"
 ```
 
 **Cài đặt version** và **khởi động process** là hai việc khác nhau. Có thể cài nhiều version nhưng chỉ chạy một version. Elastic mặc định **không auto-start** vì chạy nhiều full stack cùng lúc tốn RAM/CPU trên Kaggle.

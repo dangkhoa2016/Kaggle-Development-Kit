@@ -73,6 +73,6 @@ QDRANT_AUTO_START_VERSIONS="1.18.3" \
 bash install/install-qdrant.sh
 ```
 
-Adapter pin QNP `1.0.0` (từ repository [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable) của cùng tác giả) tại commit `066084be23d23a5be11ca8e5df28d5da9eef1cc4`, chạy native single-node, bind Qdrant vào `127.0.0.1` và tắt public access của QNP. Mỗi exact Qdrant version có tree `.system/qdrant/instances/<version>/` riêng. Qdrant **1.18.3** là baseline v1.0.0 đã được xác minh; exact version khác vẫn có thể cấu hình nhưng nên được kiểm tra riêng trước khi xem là baseline được hỗ trợ.
+Adapter pin QNP `1.0.0` (từ repository [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable) của cùng tác giả) tại commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca`, chạy native single-node, bind Qdrant vào `127.0.0.1` và tắt public access của QNP. Mỗi exact Qdrant version có tree `.system/qdrant/instances/<version>/` riêng. Qdrant **1.18.3** là baseline v1.0.0 đã được xác minh; exact version khác vẫn có thể cấu hình nhưng nên được kiểm tra riêng trước khi xem là baseline được hỗ trợ.
 
 Xem README ở root, [`VALIDATION.vi.md`](VALIDATION.vi.md) và `notebooks/kaggle-dev-bootstrap.ipynb` để biết cách sử dụng và validation dành cho người dùng public.

@@ -1,0 +1,11 @@
+# Default repository ownership
+* @dangkhoa2016
+
+# Explicit ownership for project-critical areas
+/.github/ @dangkhoa2016
+/bin/ @dangkhoa2016
+/config/ @dangkhoa2016
+/install/ @dangkhoa2016
+/notebooks/ @dangkhoa2016
+/scripts/ @dangkhoa2016
+/tests/ @dangkhoa2016

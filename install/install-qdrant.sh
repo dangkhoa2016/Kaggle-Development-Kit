@@ -26,15 +26,15 @@ QDRANT_ENABLE_GRPC="${QDRANT_ENABLE_GRPC:-0}"
 QDRANT_PROFILE="${QDRANT_PROFILE:-auto}"
 QDRANT_SERVICE_USER="${QDRANT_SERVICE_USER:-qdrantuser}"
 QNP_RELEASE="${QNP_RELEASE:-1.0.0}"
-QNP_SOURCE_COMMIT="${QNP_SOURCE_COMMIT:-066084be23d23a5be11ca8e5df28d5da9eef1cc4}"
+QNP_SOURCE_COMMIT="${QNP_SOURCE_COMMIT:-21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca}"
 QNP_GIT_URL="${QNP_GIT_URL:-https://github.com/dangkhoa2016/Qdrant-Native-Portable.git}"
 QNP_FORCE_SOURCE_REFRESH="${QNP_FORCE_SOURCE_REFRESH:-0}"
 QNP_SOURCE_CANONICAL_SHA256="${QNP_SOURCE_CANONICAL_SHA256:-}"
 # Production QNP pin: bind offline cache reuse to the canonical source manifest
 # fingerprint. Custom commits may opt in by supplying their own fingerprint.
 if [ -z "$QNP_SOURCE_CANONICAL_SHA256" ] \
-   && [ "$QNP_SOURCE_COMMIT" = "066084be23d23a5be11ca8e5df28d5da9eef1cc4" ]; then
-    QNP_SOURCE_CANONICAL_SHA256="70b0805ed5d44181fb82bde6b48ba726a611bef4e9c815f8627cbb1dc43c5440"
+   && [ "$QNP_SOURCE_COMMIT" = "21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca" ]; then
+    QNP_SOURCE_CANONICAL_SHA256="e0c40143c657581011e8773e0ec25ff827a2cb4b336aa10342f483593e4b156a"
 fi
 
 log() { printf '[install-qdrant] %s\n' "$*"; }

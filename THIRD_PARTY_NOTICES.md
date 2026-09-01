@@ -54,7 +54,7 @@ Elastic's default distributions are published under Elastic License 2.0 (ELv2). 
 
 ## Qdrant and Qdrant Native Portable
 
-The repository does not bundle Qdrant binaries or a QNP source checkout. `install/install-qdrant.sh` fetches QNP `1.0.0` (from the author's open-source repository [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable)) at the exact Git commit `066084be23d23a5be11ca8e5df28d5da9eef1cc4` at runtime. That QNP release is MIT-licensed. The pinned QNP source then downloads the selected official Qdrant release binary into the gitignored `.system/` runtime tree.
+The repository does not bundle Qdrant binaries or a QNP source checkout. `install/install-qdrant.sh` fetches QNP `1.0.0` (from the author's open-source repository [`dangkhoa2016/Qdrant-Native-Portable`](https://github.com/dangkhoa2016/Qdrant-Native-Portable)) at the exact Git commit `21f83a6df7410b8f8bcc1a0919c0b51999d4b6ca` at runtime. That QNP release is MIT-licensed. The pinned QNP source then downloads the selected official Qdrant release binary into the gitignored `.system/` runtime tree.
 
 Qdrant **v1.18.3** is the Qdrant release validated for the v1.0.0 baseline. It is licensed under the Apache License 2.0 in upstream `qdrant/qdrant`. Other selectable Qdrant versions retain the license shipped by their exact upstream release and should be reviewed independently. Neither QNP nor Qdrant is redistributed in this repository's public source ZIP.
 
