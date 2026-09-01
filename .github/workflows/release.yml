@@ -1,0 +1,150 @@
+name: Publish Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/release-trigger"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish (for example v1.0.0)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ github.event_name == 'push' && github.event.before || github.sha }}
+    permissions:
+      contents: read
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out validated source
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'push' && github.event.before || github.sha }}
+
+      - name: Resolve release identity
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="${{ github.event_name == 'push' && github.event.before || github.sha }}"
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            TAG="$(tr -d '[:space:]' < .github/release-target)"
+          fi
+          case "$TAG" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "Release tag must use vX.Y.Z form: $TAG" >&2; exit 1 ;;
+          esac
+          VERSION="${TAG#v}"
+          NOTES_TEMPLATE=".github/release-notes/${TAG}.md"
+          test -f "$NOTES_TEMPLATE"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "notes_template=$NOTES_TEMPLATE" >> "$GITHUB_OUTPUT"
+
+      - name: Build release artifacts
+        id: artifacts
+        env:
+          KDEV_RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT_DIR="$PWD/release"
+          bash scripts/build-release-zips.sh "$OUT_DIR"
+          ZIP="kaggle-development-kit-v${KDEV_RELEASE_VERSION}.zip"
+          SIDECAR="${ZIP}.sha256"
+          SHA256="$(awk '{print $1}' "$OUT_DIR/$SIDECAR")"
+          (cd "$OUT_DIR" && sha256sum -c "$SIDECAR")
+          git diff --exit-code -- MANIFEST.sha256 install/MANIFEST.sha256
+          echo "zip=$ZIP" >> "$GITHUB_OUTPUT"
+          echo "sidecar=$SIDECAR" >> "$GITHUB_OUTPUT"
+          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
+
+      - name: Move annotated release tag to validated commit
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          SOURCE_SHA: ${{ steps.release.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTHOR_NAME="$(python3 -c 'print("\u0110\u0103ng Khoa")')"
+          git config user.name "$AUTHOR_NAME"
+          git config user.email "i.am@dangkhoa.dev"
+          git tag -fa "$TAG" "$SOURCE_SHA" -m "Kaggle Development Kit $TAG"
+          git push origin "refs/tags/$TAG" --force
+
+      - name: Replace GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          ZIP: ${{ steps.artifacts.outputs.zip }}
+          SIDECAR: ${{ steps.artifacts.outputs.sidecar }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "Kaggle Development Kit $TAG" --notes "Release assets are being published and verified."
+          fi
+          gh release upload "$TAG" "release/$ZIP" "release/$SIDECAR" --clobber
+
+      - name: Verify published assets byte-for-byte
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          ZIP: ${{ steps.artifacts.outputs.zip }}
+          SIDECAR: ${{ steps.artifacts.outputs.sidecar }}
+          EXPECTED_SHA256: ${{ steps.artifacts.outputs.sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERIFY_DIR="$(mktemp -d)"
+          trap 'rm -rf "$VERIFY_DIR"' EXIT
+          gh release download "$TAG" --pattern "$ZIP" --pattern "$SIDECAR" --dir "$VERIFY_DIR"
+          cmp "release/$ZIP" "$VERIFY_DIR/$ZIP"
+          cmp "release/$SIDECAR" "$VERIFY_DIR/$SIDECAR"
+          (cd "$VERIFY_DIR" && sha256sum -c "$SIDECAR")
+          REMOTE_DIGEST="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" --jq ".assets[] | select(.name == \"$ZIP\") | .digest")"
+          test "$REMOTE_DIGEST" = "sha256:$EXPECTED_SHA256"
+
+      - name: Publish verified release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          NOTES_TEMPLATE: ${{ steps.release.outputs.notes_template }}
+          RELEASE_COMMIT: ${{ steps.release.outputs.source_sha }}
+          ARTIFACT_SHA256: ${{ steps.artifacts.outputs.sha256 }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          NOTES_FILE="$(mktemp)"
+          python3 - "$NOTES_TEMPLATE" "$NOTES_FILE" <<'PY'
+          import os
+          import sys
+          from pathlib import Path
+          source = Path(sys.argv[1]).read_text(encoding="utf-8")
+          rendered = source.replace("{{TAG}}", os.environ["TAG"]).replace("{{RELEASE_COMMIT}}", os.environ["RELEASE_COMMIT"]).replace("{{ARTIFACT_SHA256}}", os.environ["ARTIFACT_SHA256"])
+          if "{{" in rendered or "}}" in rendered:
+              raise SystemExit("Unresolved release-note placeholder detected")
+          Path(sys.argv[2]).write_text(rendered, encoding="utf-8")
+          PY
+          gh release edit "$TAG" --title "Kaggle Development Kit $TAG" --notes-file "$NOTES_FILE"

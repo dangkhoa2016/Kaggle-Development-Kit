@@ -1,5 +1,9 @@
 # Kaggle Development Kit
 
+[![CI](https://github.com/dangkhoa2016/Kaggle-Development-Kit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/dangkhoa2016/Kaggle-Development-Kit/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/dangkhoa2016/Kaggle-Development-Kit?display_name=tag&sort=semver)](https://github.com/dangkhoa2016/Kaggle-Development-Kit/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/dangkhoa2016/Kaggle-Development-Kit)](LICENSE)
+
 > 🌐 Language / Ngôn ngữ: [English](README.md) | **Tiếng Việt**
 
 Dự án bootstrap theo hướng **GitHub-first** để biến một phiên Kaggle Notebook thành môi trường Linux phục vụ development. Dự án có thể cài và quản lý **SQLite, nhiều phiên bản PostgreSQL + pgvector, nhiều phiên bản Redis chính xác, nhiều phiên bản Elastic Stack, Qdrant, mise/Node/Ruby/npm/Yarn, OpenSSH, ngrok và tmux** mà không cần Docker.

@@ -1,0 +1,41 @@
+name: Usage question
+description: Ask a focused question about configuring or using Kaggle Development Kit.
+title: "[Question]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check the README, installer documentation, validation notes, and existing issues first. Never include secrets, tokens, private keys, tunnel connection details, or private database contents.
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I checked the project documentation and existing issues.
+          required: true
+        - label: I removed or sanitized sensitive information.
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Project version or commit
+      placeholder: v1.0.0 or 4a30e01
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+      description: Describe the desired workflow or outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: Include relevant commands, configuration, and sanitized output.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+      description: Include the relevant Kaggle/client environment and configured component versions.
