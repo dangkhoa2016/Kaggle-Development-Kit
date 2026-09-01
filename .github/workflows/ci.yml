@@ -21,6 +21,9 @@ jobs:
         with:
           ref: ${{ inputs.ref || github.sha }}
 
+      - name: Focused QNP cold-restore regression
+        run: bash tests/test-doctor-qnp-pin.sh
+
       - name: Verify root and install manifests
         run: |
           if [ -f MANIFEST.sha256 ]; then
