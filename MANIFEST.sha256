@@ -60,7 +60,7 @@ cc89ce9ea339cfea754815884631d330dc7fb5f19ef83ce6bb28ca2bceb4e297  ./licenses/SQL
 e4f706af4194b5a5f6f9957c3bb0c85616d7eb9d9ac0f6a5e203a16e3fab8c0f  ./mise.toml
 dd3d0c8d33c898e96dc9aa07f6a1129c0ad27d30d834bc96c17a93bf9eb73731  ./notebooks/kaggle-dev-bootstrap.ipynb
 89f0aad7e772862f6cfeeaaa69ca103b542873f9cb01e72cb0848929eb036b96  ./scripts/build-release-zips.sh
-60cec17b1c0d9173e6ad8e0fcbe9c2a8403df6a9bae35a7c2f9b1b8c33247618  ./scripts/doctor.sh
+e1f0e641b001b89df3533b06f43fa26aa951fde2c2da838e4a193647d2d798e8  ./scripts/doctor.sh
 c2fd2587d2efab8f60c33de1e72d3a4cf8bec36b4e50a299b7b4f86aae84588b  ./scripts/rebuild-sqlite-tools.sh
 78867f3c5f3aee22aaa5152db9f083686af2297c9dab3d7177ba6b29eef9d8f6  ./scripts/refresh-manifest.sh
 59615d7c79149ca00165c50dd8335a2e40eac9526dd8cc4df1683796b901d8c5  ./setup.sh
@@ -70,7 +70,7 @@ c2fd2587d2efab8f60c33de1e72d3a4cf8bec36b4e50a299b7b4f86aae84588b  ./scripts/rebu
 17c418ee81928ca2b27ce4f3457591743749377511be91d0679d8f7f6f7eb125  ./tests/test-connect-kaggle-restart-cleanup.sh
 abc91efc3c87c2b1bb7815dc4ca08757311638f7a25ab0e114123d4823fd5eec  ./tests/test-connect-kaggle.sh
 fd8e44bb078c3f2fcfb821b7c65481136f2c64f9a4d438b0b7f2c23160983768  ./tests/test-doctor-mise-toolchain.sh
-944284c60e1496f34b4415919c4207b822341bb69457dade36382accc9c46f97  ./tests/test-doctor-qnp-pin.sh
+718b837b3220f1249716c76ced1514a04d368ea026158360470d4254c886e0ba  ./tests/test-doctor-qnp-pin.sh
 d9eb541b0f7df7601c21ceb5cf29265ddf0c9ac0157369c20e331299b424b0e3  ./tests/test-elastic-config-seeding.sh
 8b9f5e5801f86c0f344215d996b3e041225c27e9df5e524e84eda8ebcf18ce67  ./tests/test-english-source-hygiene.sh
 7c2ac439b1851004c59e8599dd7f4f90966e015bf842fd58288c72f454ad63cb  ./tests/test-install-all-cold-restore-reuse.sh
