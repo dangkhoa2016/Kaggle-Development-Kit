@@ -12,6 +12,9 @@ set -euo pipefail
 # checkout HEAD mismatch. When .git is intentionally absent from a portable
 # cache, metadata may match but doctor must say that tree identity is not
 # independently verifiable rather than claiming the pin itself is verified.
+# A portable cache may also live underneath the main project Git repository;
+# in that case Git parent discovery must never be mistaken for QNP checkout
+# identity after the QNP-local .git metadata disappears during cold restore.
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TMP="$(mktemp -d)"
@@ -47,7 +50,7 @@ make_defaults() {
 }
 
 run_doctor() {
-    # $1 = system dir; $2 = defaults file. Sets RC and DOCTOR_OUT.
+    # $1 = system dir; $2 = defaults file. Sets rc and DOCTOR_OUT.
     DOCTOR_OUT="$TMP/doctor.$RANDOM.log"
     rc=0
     (
@@ -102,4 +105,34 @@ if grep -q 'pin verified via metadata' "$DOCTOR_OUT"; then
   fail "doctor still claims the QNP pin is verified from metadata alone (log: $DOCTOR_OUT)"
 fi
 
-echo 'PASS: doctor validates QNP pin identity and uses cautious metadata-only wording'
+# --- Scenario 4: cold-restored QNP below parent repo must not inherit HEAD ----
+# Reproduce the Kaggle layout: .system/qdrant/qnp lives beneath the main
+# project repository. Once QNP-local .git disappears, plain `git -C` walks up
+# to the project .git and returns the wrong repository HEAD.
+PARENT="$TMP/nested-project"
+GIT_CONFIG_NOSYSTEM=1 git init -q "$PARENT" 2>/dev/null
+git -C "$PARENT" -c user.name=kdev-test -c user.email=test@example.com \
+    commit --allow-empty -q -m parent-baseline
+PARENT_HEAD="$(git -C "$PARENT" rev-parse HEAD)"
+NESTED_SYS="$PARENT/.system"
+NESTED_QNP_COMMIT="$(build_qnp_cache "$NESTED_SYS")"
+[ "$PARENT_HEAD" != "$NESTED_QNP_COMMIT" ] ||
+  fail 'test setup unexpectedly produced identical parent and QNP commits'
+NESTED_DEFAULTS="$TMP/defaults-nested.env"
+make_defaults "$NESTED_DEFAULTS" "$NESTED_QNP_COMMIT"
+NESTED_QNP_SRC="$NESTED_SYS/qdrant/qnp/qdrant-native-platform-1.0.0"
+rm -rf "$NESTED_QNP_SRC/.git"
+
+run_doctor "$NESTED_SYS" "$NESTED_DEFAULTS"
+
+[ "$rc" -eq 0 ] ||
+  fail "doctor followed parent Git metadata for cold-restored QNP cache (parent=$PARENT_HEAD qnp=$NESTED_QNP_COMMIT log: $DOCTOR_OUT)"
+grep -q '⚠️[[:space:]]*QNP' "$DOCTOR_OUT" ||
+  fail "doctor did not downgrade nested metadata-only QNP verification to a warning (log: $DOCTOR_OUT)"
+grep -q 'source tree identity cannot be independently verified' "$DOCTOR_OUT" ||
+  fail "doctor did not report unavailable QNP-local Git identity for nested cold restore (log: $DOCTOR_OUT)"
+if grep -Fq "checkout HEAD=$PARENT_HEAD" "$DOCTOR_OUT"; then
+  fail "doctor incorrectly used parent project HEAD as QNP checkout identity (log: $DOCTOR_OUT)"
+fi
+
+echo 'PASS: doctor validates QNP pin identity without inheriting parent repository HEAD'
